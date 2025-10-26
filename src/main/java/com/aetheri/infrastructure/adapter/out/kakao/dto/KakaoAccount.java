@@ -174,7 +174,7 @@ public record KakaoAccount(
                         .isProfileAgree(isProfileAgree)
                         .isNickNameAgree(isNickNameAgree)
                         .isProfileImageAgree(isProfileImageAgree)
-                        .profile(profile.toResult())
+                        .profile(profile != null ? profile.toResult() : null)
                         .isNameAgree(isNameAgree)
                         .name(name)
                         .isEmailAgree(isEmailAgree)
