@@ -19,19 +19,6 @@ import java.util.List;
 public class AuthenticationConverter {
 
     /**
-     * 주어진 사용자 엔티티({@code Runner})를 사용하여 {@link Authentication} 객체를 생성합니다.
-     *
-     * <p>생성된 {@code Authentication} 객체의 주체(principal)에는 사용자의 고유 ID가,
-     * 권한(authorities)에는 기본값인 "ROLE_USER"가 할당됩니다.</p>
-     *
-     * @param runner 사용자 엔티티({@code Runner})입니다.
-     * @return 사용자의 ID와 권한 정보를 담은 {@code Authentication} 객체입니다.
-     */
-    public static Authentication toAuthentication(Runner runner) {
-        return toAuthentication(runner.getId());
-    }
-
-    /**
      * 주어진 사용자 ID({@code runnerId})를 사용하여 {@link Authentication} 객체를 생성합니다.
      *
      * <p>이 메서드는 주로 JWT(JSON Web Token) 등의 검증을 통해 사용자 ID만 알고 있을 때
