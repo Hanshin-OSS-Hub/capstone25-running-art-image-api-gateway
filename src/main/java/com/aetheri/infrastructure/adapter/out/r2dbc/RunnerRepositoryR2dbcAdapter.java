@@ -1,10 +1,12 @@
 package com.aetheri.infrastructure.adapter.out.r2dbc;
 
+import com.aetheri.application.command.RunnerSaveCommand;
 import com.aetheri.application.port.out.r2dbc.RunnerRepositoryPort;
 import com.aetheri.application.result.runner.RunnerResult;
 import com.aetheri.infrastructure.adapter.out.r2dbc.mapper.RunnerMapper;
 import com.aetheri.infrastructure.persistence.repository.RunnerR2dbcRepository;
 import com.aetheri.infrastructure.persistence.entity.Runner;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
@@ -18,17 +20,9 @@ import reactor.core.publisher.Mono;
  * @see RunnerR2dbcRepository 실제 R2DBC 리포지토리 인터페이스
  */
 @Repository
+@RequiredArgsConstructor
 public class RunnerRepositoryR2dbcAdapter implements RunnerRepositoryPort {
     private final RunnerR2dbcRepository repository;
-
-    /**
-     * {@code RunnerRepositoryR2dbcAdapter}의 생성자입니다.
-     *
-     * @param repository Spring Data R2DBC 리포지토리 인스턴스입니다.
-     */
-    public RunnerRepositoryR2dbcAdapter(RunnerR2dbcRepository repository) {
-        this.repository = repository;
-    }
 
     /**
      * 주어진 카카오 ID({@code kakaoId})에 해당하는 사용자 엔티티를 조회합니다.
@@ -44,12 +38,16 @@ public class RunnerRepositoryR2dbcAdapter implements RunnerRepositoryPort {
     /**
      * 새로운 사용자 엔티티를 저장하거나, 기존 사용자 엔티티를 갱신합니다.
      *
-     * @param runner 저장하거나 갱신할 {@code Runner} 엔티티입니다.
+     * @param command 저장하거나 갱신할 {@code Runner} 엔티티입니다.
      * @return 저장/갱신된 {@code Runner} 엔티티를 발행하는 {@code Mono}입니다.
      */
     @Override
-    public Mono<RunnerResult> save(Runner runner) {
-        return repository.save(runner).map(RunnerMapper::toResult);
+    public Mono<RunnerResult> save(RunnerSaveCommand command) {
+        Runner entity = Runner.builder()
+                .name(command.name())
+                .kakaoId(command.kakaoId())
+                .build();
+        return repository.save(entity).map(RunnerMapper::toResult);
     }
 
     /**

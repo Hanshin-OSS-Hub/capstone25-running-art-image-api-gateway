@@ -1,5 +1,6 @@
 package com.aetheri.application.service.sign;
 
+import com.aetheri.application.command.RunnerSaveCommand;
 import com.aetheri.application.port.in.sign.SignUpUseCase;
 import com.aetheri.application.port.out.r2dbc.RunnerRepositoryPort;
 import com.aetheri.application.result.runner.RunnerResult;
@@ -67,15 +68,15 @@ public class SignUpService implements SignUpUseCase {
     /**
      * 새로운 사용자 엔티티를 생성하고 데이터베이스에 저장합니다.
      *
-     * @param id 사용자의 카카오 ID입니다.
+     * @param kakaoId 사용자의 카카오 ID입니다.
      * @param name 사용자의 이름입니다.
      * @return 저장된 {@code Runner} 엔티티를 발행하는 {@code Mono}입니다.
      */
-    private Mono<RunnerResult> saveRunner(Long id, String name) {
-        Runner runner = new Runner(
-                id,
-                name
-        );
+    private Mono<RunnerResult> saveRunner(Long kakaoId, String name) {
+        RunnerSaveCommand runner = RunnerSaveCommand.builder()
+                .name(name)
+                .kakaoId(kakaoId)
+                .build();
         return runnerRepositoryPort.save(runner);
     }
 }

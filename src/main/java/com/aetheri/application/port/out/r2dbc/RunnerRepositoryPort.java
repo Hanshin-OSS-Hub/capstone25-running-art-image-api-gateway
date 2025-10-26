@@ -1,5 +1,6 @@
 package com.aetheri.application.port.out.r2dbc;
 
+import com.aetheri.application.command.RunnerSaveCommand;
 import com.aetheri.application.result.runner.RunnerResult;
 import com.aetheri.infrastructure.adapter.out.r2dbc.RunnerRepositoryR2dbcAdapter;
 import com.aetheri.infrastructure.persistence.entity.Runner;
@@ -27,10 +28,10 @@ public interface RunnerRepositoryPort {
      *
      * <p>이 메서드는 새로운 사용자 정보를 영속화하거나, 기존 사용자 정보의 변경 사항을 반영합니다.</p>
      *
-     * @param runner 저장될 사용자 엔티티({@code Runner})입니다.
-     * @return 저장 또는 갱신된 사용자 엔티티({@code Runner})를 발행하는 {@code Mono}입니다.
+     * @param runner 저장될 사용자 엔티티({@code RunnerSaveCommand})입니다.
+     * @return 저장 또는 갱신된 사용자 엔티티({@code RunnerResult})를 발행하는 {@code Mono}입니다.
      */
-    Mono<RunnerResult> save(Runner runner);
+    Mono<RunnerResult> save(RunnerSaveCommand runner);
 
     /**
      * 카카오 ID({@code kakaoId})를 사용하여 해당 사용자가 데이터베이스에 존재하는지 확인합니다.
