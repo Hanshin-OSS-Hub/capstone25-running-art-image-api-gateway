@@ -11,6 +11,16 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/*
+ * app:
+ *   cors:
+ *     allowed-origins:
+ *       - https://your-frontend-domain.com
+ *       - https://www.your-frontend-domain.com
+ *       # PWA 배포 도메인 추가
+ *
+ * 배포 환경에서는 위와 같은 yml을 추가해야 함
+ * */
 //@Configuration
 //@Profile("prod")
 public class ProdCorsConfig {
