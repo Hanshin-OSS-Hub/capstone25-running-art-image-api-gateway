@@ -91,7 +91,7 @@ public class JwtTokenProvider implements JwtTokenProviderPort {
      * </ul>
      *
      * @param authentication 토큰 생성에 사용될 사용자 인증 정보입니다.
-     * @return 생성된 리프레시 토큰 문자열과 관련 정보를 담은 {@code RefreshTokenIssueResponse}입니다.
+     * @return 생성된 리프레시 토큰 문자열과 관련 정보를 담은 {@code RefreshTokenIssueResult}입니다.
      */
     @Override
     public RefreshTokenIssueResult generateRefreshToken(Authentication authentication) {
