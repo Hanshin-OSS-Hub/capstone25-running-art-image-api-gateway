@@ -1,6 +1,5 @@
 package com.aetheri.infrastructure.persistence.entity;
 
-import com.aetheri.application.dto.image.ImageMetadataResponse;
 import com.aetheri.domain.enums.image.Proficiency;
 import com.aetheri.domain.enums.image.Shape;
 import lombok.Builder;
@@ -129,25 +128,6 @@ public class ImageMetadata {
                 .createdAt(LocalDate.now())
                 .shared(false)                      // 기본적으로 비공개(false)로 설정
                 .modifiedAt(LocalDate.now())
-                .build();
-    }
-
-    /**
-     * 현재 {@code ImageMetadata} 엔티티를 클라이언트에 응답하기 위한 {@link ImageMetadataResponse} DTO로 변환합니다.
-     *
-     * @return 변환된 {@code ImageMetadataResponse} DTO입니다.
-     */
-    public ImageMetadataResponse toResponse(){
-        return ImageMetadataResponse.builder()
-                .title(title)
-                .description(description)
-                .location(location)
-                .imagePath(imagePath)
-                .shape(shape)
-                .proficiency(proficiency)
-                .shared(shared)
-                .createdAt(createdAt)
-                .modifiedAt(modifiedAt)
                 .build();
     }
 }

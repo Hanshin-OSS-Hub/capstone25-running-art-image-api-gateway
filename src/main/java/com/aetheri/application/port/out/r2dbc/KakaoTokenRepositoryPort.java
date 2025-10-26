@@ -1,6 +1,6 @@
 package com.aetheri.application.port.out.r2dbc;
 
-import com.aetheri.infrastructure.persistence.entity.KakaoToken;
+import com.aetheri.application.result.kakao.KakaoTokenResult;
 import reactor.core.publisher.Mono;
 
 /**
@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
  * 이 포트는 **R2DBC**와 같은 반응형(Reactive) 데이터베이스 구현체를 통해
  * 카카오 토큰 정보를 저장, 조회, 삭제, 존재 여부를 확인하는 기능을 추상화합니다.
  *
- * @see com.aetheri.domain.adapter.out.r2dbc.KakaoTokenRepositoryR2dbcAdapter 실제 R2DBC 기반 데이터 저장소 구현체(어댑터)의 예시입니다.
+ * @see com.aetheri.infrastructure.adapter.out.r2dbc.KakaoTokenRepositoryR2dbcAdapter 실제 R2DBC 기반 데이터 저장소 구현체(어댑터)의 예시입니다.
  */
 public interface KakaoTokenRepositoryPort {
 
@@ -31,7 +31,7 @@ public interface KakaoTokenRepositoryPort {
      * @param runnerId 조회할 토큰 정보의 소유자인 사용자의 고유 식별자(ID)입니다.
      * @return 조회된 카카오 토큰 엔티티({@code KakaoToken})를 발행하거나, 존재하지 않으면 비어있는 {@code Mono}를 발행합니다.
      */
-    Mono<KakaoToken> findByRunnerId(Long runnerId);
+    Mono<KakaoTokenResult> findByRunnerId(Long runnerId);
 
     /**
      * 사용자의 고유 식별자({@code runnerId})를 사용하여 데이터베이스에 저장된 카카오 토큰 정보를 삭제합니다.

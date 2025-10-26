@@ -1,6 +1,6 @@
 package com.aetheri.application.port.in.imagemetadata;
 
-import com.aetheri.application.dto.image.ImageMetadataUpdateRequest;
+import com.aetheri.application.command.imagemetadata.ImageMetadataUpdateCommand;
 import reactor.core.publisher.Mono;
 
 /**
@@ -19,5 +19,5 @@ public interface UpdateImageMetadataUseCase {
      * @param request 업데이트할 메타데이터 필드(예: 제목, 설명)가 포함된 DTO입니다.
      * @return 업데이트가 성공적으로 적용되었을 때 완료되는 (값을 발행하지 않는) {@code Mono<Void>} 객체입니다.
      */
-    Mono<Void> updateImageMetadata(Long runnerId, Long imageId, ImageMetadataUpdateRequest request);
+    Mono<Void> updateImageMetadata(Long runnerId, Long imageId, ImageMetadataUpdateCommand request);
 }

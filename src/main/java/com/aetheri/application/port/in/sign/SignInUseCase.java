@@ -1,6 +1,6 @@
 package com.aetheri.application.port.in.sign;
 
-import com.aetheri.application.dto.SignInResponse;
+import com.aetheri.application.result.kakao.SignInResult;
 import reactor.core.publisher.Mono;
 
 /**
@@ -21,5 +21,5 @@ public interface SignInUseCase {
      * @param code 카카오(또는 외부 OAuth 제공자)로부터 받은 인증 코드(Authorization Code) 문자열입니다.
      * @return 로그인 성공 시 발급된 토큰 정보를 담은 {@code SignInResponse} 객체를 발행하는 {@code Mono}입니다.
      */
-    Mono<SignInResponse> signIn(String code);
+    Mono<SignInResult> signIn(String code);
 }

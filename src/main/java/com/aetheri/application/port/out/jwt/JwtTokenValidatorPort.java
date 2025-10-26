@@ -5,7 +5,7 @@ package com.aetheri.application.port.out.jwt;
  * 이 포트는 토큰의 서명(Signature) 유효성, 만료 여부 등 다양한 검증 규칙을 적용하여
  * 토큰이 정상적으로 사용 가능한지 확인하는 역할을 합니다.
  *
- * @see com.aetheri.domain.adapter.out.jwt.JwtTokenValidator 실제 유효성 검증 구현체(어댑터)의 예시입니다.
+ * @see com.aetheri.infrastructure.adapter.out.jwt.JwtTokenValidator 실제 유효성 검증 구현체(어댑터)의 예시입니다.
  */
 public interface JwtTokenValidatorPort {
 

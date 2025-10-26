@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
  * 카카오(Kakao) API 서버에 사용자 **연결 해제(Unlink)**, 즉 회원 탈퇴를 요청하는 기능을 담당하는 아웃고잉 포트(Port)입니다.
  * 이 포트는 주어진 액세스 토큰을 사용하여 사용자 계정과 카카오 서비스의 연동을 해제하는 외부 통신 구현체에 대한 추상화를 제공합니다.
  *
- * @see com.aetheri.domain.adapter.out.kakao.KakaoUnlinkAdapter 실제 카카오 API 호출 구현체(어댑터)의 예시입니다.
+ * @see com.aetheri.infrastructure.adapter.out.kakao.KakaoUnlinkAdapter 실제 카카오 API 호출 구현체(어댑터)의 예시입니다.
  */
 public interface KakaoUnlinkPort {
 

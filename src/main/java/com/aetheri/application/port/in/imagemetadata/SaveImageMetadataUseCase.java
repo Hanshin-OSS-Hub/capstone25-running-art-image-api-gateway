@@ -1,6 +1,6 @@
 package com.aetheri.application.port.in.imagemetadata;
 
-import com.aetheri.application.dto.image.ImageMetadataSaveRequest;
+import com.aetheri.application.command.imagemetadata.ImageMetadataSaveCommand;
 import reactor.core.publisher.Mono;
 
 /**
@@ -17,5 +17,5 @@ public interface SaveImageMetadataUseCase {
      * @param request 저장할 이미지 메타데이터가 담긴 요청 페이로드 DTO입니다.
      * @return 메타데이터 저장 작업이 완료(영속화)되었을 때 종료되는 {@code Mono<Void>} 객체입니다.
      */
-    Mono<Void> saveImageMetadata(Long runnerId, ImageMetadataSaveRequest request);
+    Mono<Void> saveImageMetadata(Long runnerId, ImageMetadataSaveCommand request);
 }

@@ -1,6 +1,6 @@
 package com.aetheri.domain.adapter.out.address;
 
-import com.aetheri.domain.exception.BusinessException;
+import com.aetheri.infrastructure.adapter.out.address.AddressInquiryAdapter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

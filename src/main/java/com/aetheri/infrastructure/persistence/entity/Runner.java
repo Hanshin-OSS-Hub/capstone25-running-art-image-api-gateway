@@ -1,7 +1,6 @@
 package com.aetheri.infrastructure.persistence.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -42,6 +41,7 @@ public class Runner {
      * @param kakaoId 카카오 고유 ID입니다.
      * @param name 사용자의 이름 또는 닉네임입니다.
      */
+    @Builder
     public Runner(Long kakaoId, String name) {
         this.kakaoId = kakaoId;
         this.name = name;

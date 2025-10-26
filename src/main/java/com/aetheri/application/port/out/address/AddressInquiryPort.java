@@ -1,6 +1,6 @@
 package com.aetheri.application.port.out.address;
 
-import com.aetheri.application.dto.address.response.AddressApiResponse;
+import com.aetheri.application.result.address.AddressApiResult;
 import reactor.core.publisher.Mono;
 
 /**
@@ -13,5 +13,5 @@ public interface AddressInquiryPort {
      * @param keyword 검색할 주소 키워드
      * @return 조회된 주소 정보 (없으면 Empty)
      */
-    Mono<AddressApiResponse> inquiryAddress(String keyword);
+    Mono<AddressApiResult> inquiryAddress(String keyword);
 }
