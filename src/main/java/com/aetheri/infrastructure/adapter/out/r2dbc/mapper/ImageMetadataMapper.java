@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 public final class ImageMetadataMapper {
     public static ImageMetadataResult toResult(ImageMetadata entity) {
         return ImageMetadataResult.builder()
+                .runnerId(entity.getRunnerId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .location(entity.getLocation())
