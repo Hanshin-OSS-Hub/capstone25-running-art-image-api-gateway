@@ -28,7 +28,7 @@ public class RunnerRepositoryR2dbcAdapter implements RunnerRepositoryPort {
      * 주어진 카카오 ID({@code kakaoId})에 해당하는 사용자 엔티티를 조회합니다.
      *
      * @param kakaoId 조회할 사용자의 카카오 고유 ID입니다.
-     * @return 조회된 {@code Runner} 엔티티를 발행하는 {@code Mono}입니다. 사용자가 없으면 {@code Mono.empty()}를 발행합니다.
+     * @return 조회된 {@code RunnerResult} 엔티티를 발행하는 {@code Mono}입니다. 사용자가 없으면 {@code Mono.empty()}를 발행합니다.
      */
     @Override
     public Mono<RunnerResult> findByKakaoId(Long kakaoId) {
@@ -39,7 +39,7 @@ public class RunnerRepositoryR2dbcAdapter implements RunnerRepositoryPort {
      * 새로운 사용자 엔티티를 저장하거나, 기존 사용자 엔티티를 갱신합니다.
      *
      * @param command 저장하거나 갱신할 {@code Runner} 엔티티입니다.
-     * @return 저장/갱신된 {@code Runner} 엔티티를 발행하는 {@code Mono}입니다.
+     * @return 저장/갱신된 {@code RunnerResult} 엔티티를 발행하는 {@code Mono}입니다.
      */
     @Override
     public Mono<RunnerResult> save(RunnerSaveCommand command) {
@@ -65,7 +65,7 @@ public class RunnerRepositoryR2dbcAdapter implements RunnerRepositoryPort {
      * 주어진 애플리케이션 고유 ID({@code id})에 해당하는 사용자 엔티티를 조회합니다.
      *
      * @param id 조회할 사용자의 애플리케이션 고유 ID(PK)입니다.
-     * @return 조회된 {@code Runner} 엔티티를 발행하는 {@code Mono}입니다.
+     * @return 조회된 {@code RunnerResult} 엔티티를 발행하는 {@code Mono}입니다.
      */
     @Override
     public Mono<RunnerResult> findById(Long id) {
