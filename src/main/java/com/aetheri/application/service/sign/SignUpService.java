@@ -1,6 +1,6 @@
 package com.aetheri.application.service.sign;
 
-import com.aetheri.application.command.RunnerSaveCommand;
+import com.aetheri.application.command.runner.RunnerSaveCommand;
 import com.aetheri.application.port.in.sign.SignUpUseCase;
 import com.aetheri.application.port.out.r2dbc.RunnerRepositoryPort;
 import com.aetheri.application.result.runner.RunnerResult;

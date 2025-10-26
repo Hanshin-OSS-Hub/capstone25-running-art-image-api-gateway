@@ -1,6 +1,6 @@
 package com.aetheri.application.port.out.r2dbc;
 
-import com.aetheri.application.command.RunnerSaveCommand;
+import com.aetheri.application.command.runner.RunnerSaveCommand;
 import com.aetheri.application.result.runner.RunnerResult;
 import com.aetheri.infrastructure.adapter.out.r2dbc.RunnerRepositoryR2dbcAdapter;
 import reactor.core.publisher.Mono;

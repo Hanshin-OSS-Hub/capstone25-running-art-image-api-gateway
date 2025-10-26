@@ -1,4 +1,4 @@
-package com.aetheri.application.command;
+package com.aetheri.application.command.runner;
 
 import lombok.Builder;
 
