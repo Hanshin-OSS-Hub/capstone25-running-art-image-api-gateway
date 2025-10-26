@@ -64,16 +64,16 @@ public record KakaoUserInfoResponseDto(
         @JsonProperty("for_partner")
         Partner partner
 ) {
-        public KakaoUserInfoResult toResult() {
-                return KakaoUserInfoResult.builder()
-                        .id(id)
-                        .hasSignedUp(hasSignedUp)
-                        .connectedAt(connectedAt)
-                        .synchedAt(synchedAt)
-                        .properties(properties)
-                        .kakaoAccountResult(kakaoAccount.toResult())
-                        .partner(partner.toResult())
-                        .build();
+    public KakaoUserInfoResult toResult() {
+        return KakaoUserInfoResult.builder()
+                .id(id)
+                .hasSignedUp(hasSignedUp)
+                .connectedAt(connectedAt)
+                .synchedAt(synchedAt)
+                .properties(properties == null ? null : new HashMap<>(properties))
+                .kakaoAccountResult(kakaoAccount != null ? kakaoAccount.toResult() : null)
+                .partner(partner != null ? partner.toResult() : null)
+                .build();
 
-        }
+    }
 }
