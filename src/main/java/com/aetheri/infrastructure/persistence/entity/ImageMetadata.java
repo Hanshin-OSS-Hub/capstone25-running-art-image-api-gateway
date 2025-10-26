@@ -131,24 +131,4 @@ public class ImageMetadata {
                 .modifiedAt(LocalDate.now())
                 .build();
     }
-
-    /**
-     * 현재 {@code ImageMetadata} 엔티티를 클라이언트에 응답하기 위한 {@link ImageMetadataResult} DTO로 변환합니다.
-     *
-     * @return 변환된 {@code ImageMetadataResponse} DTO입니다.
-     */
-    public ImageMetadataResult toResult(){
-        return ImageMetadataResult.builder()
-                .runnerId(runnerId)
-                .title(title)
-                .description(description)
-                .location(location)
-                .imagePath(imagePath)
-                .shape(shape)
-                .proficiency(proficiency)
-                .shared(shared)
-                .createdAt(createdAt)
-                .modifiedAt(modifiedAt)
-                .build();
-    }
 }

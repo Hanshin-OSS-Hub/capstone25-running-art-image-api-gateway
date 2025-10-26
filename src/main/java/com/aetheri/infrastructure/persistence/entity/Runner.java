@@ -47,12 +47,4 @@ public class Runner {
         this.kakaoId = kakaoId;
         this.name = name;
     }
-
-    public RunnerResult toResult() {
-        return RunnerResult.builder()
-                .id(id)
-                .kakaoId(kakaoId)
-                .name(name)
-                .build();
-    }
 }

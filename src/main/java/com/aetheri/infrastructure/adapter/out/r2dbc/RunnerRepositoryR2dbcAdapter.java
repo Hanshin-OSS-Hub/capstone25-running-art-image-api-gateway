@@ -1,6 +1,8 @@
 package com.aetheri.infrastructure.adapter.out.r2dbc;
 
 import com.aetheri.application.port.out.r2dbc.RunnerRepositoryPort;
+import com.aetheri.application.result.runner.RunnerResult;
+import com.aetheri.infrastructure.adapter.out.r2dbc.mapper.RunnerMapper;
 import com.aetheri.infrastructure.persistence.repository.RunnerR2dbcRepository;
 import com.aetheri.infrastructure.persistence.entity.Runner;
 import org.springframework.stereotype.Repository;
@@ -35,8 +37,8 @@ public class RunnerRepositoryR2dbcAdapter implements RunnerRepositoryPort {
      * @return 조회된 {@code Runner} 엔티티를 발행하는 {@code Mono}입니다. 사용자가 없으면 {@code Mono.empty()}를 발행합니다.
      */
     @Override
-    public Mono<Runner> findByKakaoId(Long kakaoId) {
-        return repository.findByKakaoId(kakaoId);
+    public Mono<RunnerResult> findByKakaoId(Long kakaoId) {
+        return repository.findByKakaoId(kakaoId).map(RunnerMapper::toResult);
     }
 
     /**
@@ -46,8 +48,8 @@ public class RunnerRepositoryR2dbcAdapter implements RunnerRepositoryPort {
      * @return 저장/갱신된 {@code Runner} 엔티티를 발행하는 {@code Mono}입니다.
      */
     @Override
-    public Mono<Runner> save(Runner runner) {
-        return repository.save(runner);
+    public Mono<RunnerResult> save(Runner runner) {
+        return repository.save(runner).map(RunnerMapper::toResult);
     }
 
     /**
@@ -68,8 +70,8 @@ public class RunnerRepositoryR2dbcAdapter implements RunnerRepositoryPort {
      * @return 조회된 {@code Runner} 엔티티를 발행하는 {@code Mono}입니다.
      */
     @Override
-    public Mono<Runner> findById(Long id) {
-        return repository.findById(id);
+    public Mono<RunnerResult> findById(Long id) {
+        return repository.findById(id).map(RunnerMapper::toResult);
     }
 
     /**

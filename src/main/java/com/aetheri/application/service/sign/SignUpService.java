@@ -2,6 +2,7 @@ package com.aetheri.application.service.sign;
 
 import com.aetheri.application.port.in.sign.SignUpUseCase;
 import com.aetheri.application.port.out.r2dbc.RunnerRepositoryPort;
+import com.aetheri.application.result.runner.RunnerResult;
 import com.aetheri.domain.exception.BusinessException;
 import com.aetheri.domain.exception.message.ErrorMessage;
 import com.aetheri.infrastructure.persistence.entity.Runner;
@@ -70,7 +71,7 @@ public class SignUpService implements SignUpUseCase {
      * @param name 사용자의 이름입니다.
      * @return 저장된 {@code Runner} 엔티티를 발행하는 {@code Mono}입니다.
      */
-    private Mono<Runner> saveRunner(Long id, String name) {
+    private Mono<RunnerResult> saveRunner(Long id, String name) {
         Runner runner = new Runner(
                 id,
                 name

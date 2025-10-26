@@ -4,6 +4,7 @@ import com.aetheri.application.command.imagemetadata.ImageMetadataSaveCommand;
 import com.aetheri.application.command.imagemetadata.ImageMetadataUpdateCommand;
 import com.aetheri.application.port.out.imagemetadata.ImageMetadataRepositoryPort;
 import com.aetheri.application.result.imagemetadata.ImageMetadataResult;
+import com.aetheri.infrastructure.adapter.out.r2dbc.mapper.ImageMetadataMapper;
 import com.aetheri.infrastructure.persistence.repository.ImageMetadataR2dbcRepository;
 import com.aetheri.infrastructure.persistence.entity.ImageMetadata;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -70,7 +71,7 @@ public class ImageMetadataRepositoryR2dbcAdapter implements ImageMetadataReposit
      * @return 조회된 {@code ImageMetadata} 엔티티를 발행하는 {@code Mono}입니다.
      */
     public Mono<ImageMetadataResult> findById(Long imageId) {
-        return imageMetadataR2DbcRepository.findById(imageId).map(ImageMetadata::toResult);
+        return imageMetadataR2DbcRepository.findById(imageId).map(ImageMetadataMapper::toResult);
     }
 
 
@@ -81,7 +82,7 @@ public class ImageMetadataRepositoryR2dbcAdapter implements ImageMetadataReposit
      * @return 해당 사용자의 모든 {@code ImageMetadata} 엔티티를 발행하는 {@code Flux}입니다.
      */
     public Flux<ImageMetadataResult> findByRunnerId(Long runnerId) {
-        return imageMetadataR2DbcRepository.findAllByRunnerId(runnerId).map(ImageMetadata::toResult);
+        return imageMetadataR2DbcRepository.findAllByRunnerId(runnerId).map(ImageMetadataMapper::toResult);
     }
 
 

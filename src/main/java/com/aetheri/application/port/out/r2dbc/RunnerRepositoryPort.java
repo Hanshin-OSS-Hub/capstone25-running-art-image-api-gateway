@@ -1,5 +1,6 @@
 package com.aetheri.application.port.out.r2dbc;
 
+import com.aetheri.application.result.runner.RunnerResult;
 import com.aetheri.infrastructure.adapter.out.r2dbc.RunnerRepositoryR2dbcAdapter;
 import com.aetheri.infrastructure.persistence.entity.Runner;
 import reactor.core.publisher.Mono;
@@ -19,7 +20,7 @@ public interface RunnerRepositoryPort {
      * @param kakaoId 카카오 서비스에서 발급된 사용자의 고유 식별자(ID)입니다.
      * @return 조회된 사용자 엔티티({@code Runner})를 발행하거나, 존재하지 않으면 비어있는 {@code Mono}를 발행합니다.
      */
-    Mono<Runner> findByKakaoId(Long kakaoId);
+    Mono<RunnerResult> findByKakaoId(Long kakaoId);
 
     /**
      * 주어진 사용자 엔티티 정보를 데이터베이스에 저장하거나 갱신합니다.
@@ -29,7 +30,7 @@ public interface RunnerRepositoryPort {
      * @param runner 저장될 사용자 엔티티({@code Runner})입니다.
      * @return 저장 또는 갱신된 사용자 엔티티({@code Runner})를 발행하는 {@code Mono}입니다.
      */
-    Mono<Runner> save(Runner runner);
+    Mono<RunnerResult> save(Runner runner);
 
     /**
      * 카카오 ID({@code kakaoId})를 사용하여 해당 사용자가 데이터베이스에 존재하는지 확인합니다.
@@ -45,7 +46,7 @@ public interface RunnerRepositoryPort {
      * @param id 시스템 내에서 사용되는 사용자의 고유 식별자(ID)입니다.
      * @return 조회된 사용자 엔티티({@code Runner})를 발행하거나, 존재하지 않으면 비어있는 {@code Mono}를 발행합니다.
      */
-    Mono<Runner> findById(Long id);
+    Mono<RunnerResult> findById(Long id);
 
     /**
      * 카카오 ID({@code kakaoId})를 사용하여 데이터베이스에 저장된 사용자 정보를 삭제합니다.

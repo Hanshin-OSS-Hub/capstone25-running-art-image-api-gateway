@@ -2,6 +2,7 @@ package com.aetheri.infrastructure.adapter.out.r2dbc;
 
 import com.aetheri.application.port.out.r2dbc.KakaoTokenRepositoryPort;
 import com.aetheri.application.result.kakao.KakaoTokenResult;
+import com.aetheri.infrastructure.adapter.out.r2dbc.mapper.KakaoTokenMapper;
 import com.aetheri.infrastructure.persistence.repository.KakaoTokenR2dbcRepository;
 import com.aetheri.infrastructure.persistence.entity.KakaoToken;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +62,7 @@ public class KakaoTokenRepositoryR2dbcAdapter implements KakaoTokenRepositoryPor
      */
     @Override
     public Mono<KakaoTokenResult> findByRunnerId(Long runnerId) {
-        return repository.findByRunnerId(runnerId).map(KakaoToken::toResult);
+        return repository.findByRunnerId(runnerId).map(KakaoTokenMapper::toResult);
     }
 
     /**

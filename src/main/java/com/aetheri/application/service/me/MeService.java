@@ -2,6 +2,7 @@ package com.aetheri.application.service.me;
 
 import com.aetheri.application.result.me.MeResult;
 import com.aetheri.application.port.out.r2dbc.RunnerRepositoryPort;
+import com.aetheri.application.result.runner.RunnerResult;
 import com.aetheri.domain.exception.BusinessException;
 import com.aetheri.domain.exception.message.ErrorMessage;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,6 @@ public class MeService {
                         ErrorMessage.NOT_FOUND_RUNNER,
                         "사용자를 찾을 수 없습니다."))
                 )
-                .map(entity -> entity.toResult().toMeResult());
+                .map(RunnerResult::toMeResult);
     }
 }

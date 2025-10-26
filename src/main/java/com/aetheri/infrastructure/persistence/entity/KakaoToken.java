@@ -68,13 +68,4 @@ public class KakaoToken {
                 .refreshToken(refreshToken)
                 .build();
     }
-
-    public KakaoTokenResult toResult(){
-        return KakaoTokenResult.builder()
-                .id(id)
-                .runnerId(runnerId)
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-    }
 }
