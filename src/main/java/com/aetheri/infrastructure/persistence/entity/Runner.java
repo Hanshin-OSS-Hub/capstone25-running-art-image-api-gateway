@@ -1,6 +1,5 @@
 package com.aetheri.infrastructure.persistence.entity;
 
-import com.aetheri.application.result.runner.RunnerResult;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;

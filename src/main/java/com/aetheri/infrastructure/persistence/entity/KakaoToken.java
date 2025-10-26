@@ -1,6 +1,5 @@
 package com.aetheri.infrastructure.persistence.entity;
 
-import com.aetheri.application.result.kakao.KakaoTokenResult;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
