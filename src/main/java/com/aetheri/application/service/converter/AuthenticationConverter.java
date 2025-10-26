@@ -1,6 +1,5 @@
 package com.aetheri.application.service.converter;
 
-import com.aetheri.infrastructure.persistence.entity.Runner;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
