@@ -2,6 +2,7 @@ package com.aetheri.domain.model;
 
 import com.aetheri.domain.enums.image.Proficiency;
 import com.aetheri.domain.enums.image.Shape;
+import com.aetheri.infrastructure.adapter.in.web.dto.in.ImageMetadataUpdateRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -109,10 +110,10 @@ public class ImageMetadata {
      *
      * <p>초기 제목과 설명, 생성/수정 날짜 및 공유 상태를 기본값으로 설정합니다.</p>
      *
-     * @param runnerId 이미지를 생성한 사용자의 ID입니다.
-     * @param imagePath 이미지 파일의 고유 경로입니다.
-     * @param location 이미지 생성 위치 정보입니다.
-     * @param shape 이미지의 형태 정보입니다.
+     * @param runnerId    이미지를 생성한 사용자의 ID입니다.
+     * @param imagePath   이미지 파일의 고유 경로입니다.
+     * @param location    이미지 생성 위치 정보입니다.
+     * @param shape       이미지의 형태 정보입니다.
      * @param proficiency 이미지의 숙련도 정보입니다.
      * @return 초기화된 {@code ImageMetadata} 엔티티 인스턴스입니다.
      */
@@ -129,5 +130,19 @@ public class ImageMetadata {
                 .shared(false)                      // 기본적으로 비공개(false)로 설정
                 .modifiedAt(LocalDate.now())
                 .build();
+    }
+
+    public void update(String title, String description) {
+        if (!title.isBlank() && !title.isEmpty()) {
+            this.title = title;
+        } else {
+            this.title = "제목을 등록해주세요.";
+        }
+
+        if (!description.isBlank() && !description.isEmpty()) {
+            this.description = description;
+        } else {
+            this.description = "설명을 등록해주세요.";
+        }
     }
 }

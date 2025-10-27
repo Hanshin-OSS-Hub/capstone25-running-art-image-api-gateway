@@ -5,15 +5,12 @@ import com.aetheri.application.command.imagemetadata.ImageMetadataUpdateCommand;
 import com.aetheri.application.port.out.r2dbc.ImageMetadataRepositoryPort;
 import com.aetheri.application.port.out.r2dbc.ImageMetadataR2dbcRepository;
 import com.aetheri.domain.model.ImageMetadata;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.data.relational.core.query.Criteria;
-import org.springframework.data.relational.core.query.Query;
-import org.springframework.data.relational.core.query.Update;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -24,29 +21,14 @@ import java.util.UUID;
  * <p>모든 데이터베이스 작업은 비동기/논블로킹 방식으로 {@code Mono} 또는 {@code Flux}를 반환합니다.</p>
  */
 @Repository
+@RequiredArgsConstructor
 public class ImageMetadataRepositoryR2dbcAdapter implements ImageMetadataRepositoryPort {
     private final ImageMetadataR2dbcRepository imageMetadataR2DbcRepository;
-    private final R2dbcEntityTemplate r2dbcEntityTemplate;
-
-    /**
-     * {@code ImageMetadataRepositoryR2dbcAdapter}의 생성자입니다.
-     *
-     * @param imageMetadataR2DbcRepository Spring Data R2DBC 리포지토리입니다.
-     * @param r2dbcEntityTemplate 동적인 쿼리 및 업데이트를 위한 템플릿입니다.
-     */
-    public ImageMetadataRepositoryR2dbcAdapter(
-            ImageMetadataR2dbcRepository imageMetadataR2DbcRepository,
-            R2dbcEntityTemplate r2dbcEntityTemplate
-    ) {
-        this.imageMetadataR2DbcRepository = imageMetadataR2DbcRepository;
-        this.r2dbcEntityTemplate = r2dbcEntityTemplate;
-    }
-
     /**
      * 새로운 이미지의 메타데이터를 데이터베이스에 저장합니다.
      *
      * @param runnerId 이미지를 등록하는 사용자의 고유 ID입니다.
-     * @param request 등록할 이미지의 메타데이터를 가진 DTO입니다.
+     * @param request  등록할 이미지의 메타데이터를 가진 DTO입니다.
      * @return 생성이 성공하면 저장된 이미지 메타데이터의 고유 ID({@code Long})를 발행하는 {@code Mono}입니다.
      */
     public Mono<Long> saveImageMetadata(Long runnerId, ImageMetadataSaveCommand request) {
@@ -88,25 +70,28 @@ public class ImageMetadataRepositoryR2dbcAdapter implements ImageMetadataReposit
      * 주어진 이미지 ID에 해당하는 이미지 메타데이터를 업데이트합니다.
      *
      * @param runnerId 수정을 요청한 사용자의 ID (소유자 검증용)
-     * @param imageId 수정할 이미지의 고유 ID입니다.
-     * @param request 업데이트할 내용을 담은 DTO입니다.
+     * @param imageId  수정할 이미지의 고유 ID입니다.
+     * @param request  업데이트할 내용을 담은 DTO입니다.
      * @return 업데이트된 행의 개수({@code Long})를 발행하는 {@code Mono}입니다.
      * @implNote **소유자({@code runnerId})와 이미지 ID({@code imageId})**를 모두 사용하여 쿼리하여, 해당 이미지의 소유자만 수정할 수 있도록 보장합니다.
      */
     public Mono<Long> updateImageMetadata(Long runnerId, Long imageId, ImageMetadataUpdateCommand request) {
-        // 이미지 ID와 사용자 ID를 모두 만족하는 레코드만 선택
-        Query query = Query.query(
-                Criteria.where("id").is(imageId)
-                        .and("runner_id").is(runnerId)
-        );
+        return imageMetadataR2DbcRepository.findById(imageId) // 1. 포트를 통해 조회
+                .flatMap(imageMetadata -> {
+                    // 2. 도메인 규칙 검사
+                    if (!imageMetadata.getRunnerId().equals(runnerId)) {
+                        // 소유자가 아님
+                        return Mono.just(0L);
+                    }
 
-        // 업데이트 내용 설정
-        Update update = Update
-                .update("title", request.title())
-                .set("description", request.description())
-                .set("modified_at", LocalDate.now()); // 수정 시간 자동 업데이트
+                    // 3. 도메인 로직 실행 (상태 변경)
+                    imageMetadata.update(request.title(), request.description());
 
-        return r2dbcEntityTemplate.update(query, update, ImageMetadata.class);
+                    // 4. 'save'가 반환하는 Mono를 리턴 체인에 포함시킴
+                    return imageMetadataR2DbcRepository.save(imageMetadata)
+                            .map(savedEntity -> 1L); // 5. 저장이 완료되면 그 결과를 1L로 변환하여 반환
+                })
+                .defaultIfEmpty(0L); // 6. findById로 찾지 못했을 경우 0L 반환
     }
 
     /**
@@ -123,18 +108,25 @@ public class ImageMetadataRepositoryR2dbcAdapter implements ImageMetadataReposit
      * 주어진 이미지 ID에 해당하는 이미지 메타데이터를 삭제합니다.
      *
      * @param runnerId 삭제를 요청한 사용자의 ID (소유자 검증용)
-     * @param imageId 삭제할 이미지의 고유 ID입니다.
+     * @param imageId  삭제할 이미지의 고유 ID입니다.
      * @return 삭제된 행의 개수({@code Long})를 발행하는 {@code Mono}입니다.
      * @implNote **소유자({@code runnerId})와 이미지 ID({@code imageId})**를 모두 사용하여 쿼리하여, 해당 이미지의 소유자만 삭제할 수 있도록 보장합니다.
      */
     public Mono<Long> deleteById(Long runnerId, Long imageId) {
-        // 이미지 ID와 사용자 ID를 모두 만족하는 레코드만 삭제
-        Query query = Query.query(
-                Criteria.where("id").is(imageId)
-                        .and("runner_id").is(runnerId)
-        );
+        return imageMetadataR2DbcRepository.findById(imageId) // 1. 포트를 통해 조회
+                .flatMap(imageMetadata -> {
+                    // 2. 도메인 규칙 검사
+                    if (!imageMetadata.getRunnerId().equals(runnerId)) {
+                        // 소유자가 아님
+                        return Mono.just(0L);
+                    }
 
-        return r2dbcEntityTemplate.delete(query, ImageMetadata.class);
+                    // 3. 'delete'를 리턴 체인에 포함시킵니다.
+                    // .delete()는 Mono<Void>를 반환합니다.
+                    return imageMetadataR2DbcRepository.delete(imageMetadata)
+                            .then(Mono.just(1L)); // 4. 삭제가 완료된 '후에' 1L을 반환합니다.
+                })
+                .defaultIfEmpty(0L); // 6. findById로 찾지 못했을 경우 0L 반환
     }
 
     /**
@@ -146,12 +138,7 @@ public class ImageMetadataRepositoryR2dbcAdapter implements ImageMetadataReposit
      * @return 삭제된 행의 개수({@code Long})를 발행하는 {@code Mono}입니다.
      */
     public Mono<Long> deleteByRunnerId(Long runnerId) {
-        // 특정 사용자 ID의 모든 레코드를 삭제
-        Query query = Query.query(
-                Criteria.where("runner_id").is(runnerId)
-        );
-
-        return r2dbcEntityTemplate.delete(query, ImageMetadata.class);
+        return imageMetadataR2DbcRepository.deleteAllByRunnerId(runnerId);
     }
 
     /**
