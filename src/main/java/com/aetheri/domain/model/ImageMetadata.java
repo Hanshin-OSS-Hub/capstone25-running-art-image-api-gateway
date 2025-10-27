@@ -1,4 +1,4 @@
-package com.aetheri.infrastructure.persistence.entity;
+package com.aetheri.domain.model;
 
 import com.aetheri.domain.enums.image.Proficiency;
 import com.aetheri.domain.enums.image.Shape;

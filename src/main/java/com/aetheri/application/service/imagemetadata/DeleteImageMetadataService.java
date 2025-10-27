@@ -1,7 +1,7 @@
 package com.aetheri.application.service.imagemetadata;
 
 import com.aetheri.application.port.in.imagemetadata.DeleteImageMetadataUseCase;
-import com.aetheri.application.port.out.imagemetadata.ImageMetadataRepositoryPort;
+import com.aetheri.application.port.out.r2dbc.ImageMetadataRepositoryPort;
 import com.aetheri.domain.exception.BusinessException;
 import com.aetheri.domain.exception.message.ErrorMessage;
 import lombok.RequiredArgsConstructor;

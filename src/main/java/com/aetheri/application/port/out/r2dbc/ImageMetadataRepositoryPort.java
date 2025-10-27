@@ -1,4 +1,4 @@
-package com.aetheri.application.port.out.imagemetadata;
+package com.aetheri.application.port.out.r2dbc;
 
 import com.aetheri.application.command.imagemetadata.ImageMetadataSaveCommand;
 import com.aetheri.application.command.imagemetadata.ImageMetadataUpdateCommand;

@@ -1,6 +1,6 @@
-package com.aetheri.infrastructure.persistence.repository;
+package com.aetheri.application.port.out.r2dbc;
 
-import com.aetheri.infrastructure.persistence.entity.KakaoToken;
+import com.aetheri.domain.model.KakaoToken;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import reactor.core.publisher.Mono;
 

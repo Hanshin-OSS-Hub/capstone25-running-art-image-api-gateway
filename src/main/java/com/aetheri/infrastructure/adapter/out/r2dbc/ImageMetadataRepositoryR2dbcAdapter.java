@@ -2,11 +2,11 @@ package com.aetheri.infrastructure.adapter.out.r2dbc;
 
 import com.aetheri.application.command.imagemetadata.ImageMetadataSaveCommand;
 import com.aetheri.application.command.imagemetadata.ImageMetadataUpdateCommand;
-import com.aetheri.application.port.out.imagemetadata.ImageMetadataRepositoryPort;
+import com.aetheri.application.port.out.r2dbc.ImageMetadataRepositoryPort;
 import com.aetheri.application.result.imagemetadata.ImageMetadataResult;
 import com.aetheri.infrastructure.adapter.out.r2dbc.mapper.ImageMetadataMapper;
-import com.aetheri.infrastructure.persistence.repository.ImageMetadataR2dbcRepository;
-import com.aetheri.infrastructure.persistence.entity.ImageMetadata;
+import com.aetheri.application.port.out.r2dbc.ImageMetadataR2dbcRepository;
+import com.aetheri.domain.model.ImageMetadata;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;

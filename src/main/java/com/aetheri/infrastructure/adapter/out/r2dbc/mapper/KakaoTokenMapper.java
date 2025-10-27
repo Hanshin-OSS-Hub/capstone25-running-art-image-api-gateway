@@ -1,7 +1,7 @@
 package com.aetheri.infrastructure.adapter.out.r2dbc.mapper;
 
 import com.aetheri.application.result.kakao.KakaoTokenResult;
-import com.aetheri.infrastructure.persistence.entity.KakaoToken;
+import com.aetheri.domain.model.KakaoToken;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -1,7 +1,7 @@
 package com.aetheri.infrastructure.adapter.out.r2dbc.mapper;
 
 import com.aetheri.application.result.runner.RunnerResult;
-import com.aetheri.infrastructure.persistence.entity.Runner;
+import com.aetheri.domain.model.Runner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

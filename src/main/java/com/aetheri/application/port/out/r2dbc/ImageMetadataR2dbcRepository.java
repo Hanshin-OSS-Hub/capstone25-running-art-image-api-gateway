@@ -1,6 +1,6 @@
-package com.aetheri.infrastructure.persistence.repository;
+package com.aetheri.application.port.out.r2dbc;
 
-import com.aetheri.infrastructure.persistence.entity.ImageMetadata;
+import com.aetheri.domain.model.ImageMetadata;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import reactor.core.publisher.Flux;
 

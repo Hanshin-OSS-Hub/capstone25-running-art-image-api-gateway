@@ -1,7 +1,7 @@
 package com.aetheri.infrastructure.adapter.out.r2dbc.mapper;
 
 import com.aetheri.application.result.imagemetadata.ImageMetadataResult;
-import com.aetheri.infrastructure.persistence.entity.ImageMetadata;
+import com.aetheri.domain.model.ImageMetadata;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
