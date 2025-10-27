@@ -26,9 +26,9 @@ class AddressInquiryAdapterTest {
         // then
         StepVerifier.create(mono)
                 .expectNextMatches(response -> response != null
-                        && response.results() != null
-                        && response.results().juso() != null
-                        && response.results().juso().size() == 2
+                        && response.resultsResult() != null
+                        && response.resultsResult().jusoResult() != null
+                        && response.resultsResult().jusoResult().size() == 2
                 )
                 .verifyComplete();  // 스트림이 성공적으로 완료되는지 검증 (이때까지 테스트가 대기함)
     }
@@ -43,7 +43,7 @@ class AddressInquiryAdapterTest {
 
         // then
         StepVerifier.create(mono)
-                .expectNextMatches(response -> response.results().juso().isEmpty())
+                .expectNextMatches(response -> response.resultsResult().jusoResult().isEmpty())
                 .verifyComplete();
     }
 }
