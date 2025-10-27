@@ -1,6 +1,5 @@
 package com.aetheri.infrastructure.adapter.in.web.dto.out;
 
-import com.aetheri.application.result.imagemetadata.ImageMetadataResult;
 import com.aetheri.domain.enums.image.Proficiency;
 import com.aetheri.domain.enums.image.Shape;
 import com.aetheri.domain.model.ImageMetadata;

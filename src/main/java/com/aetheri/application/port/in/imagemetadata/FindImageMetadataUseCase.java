@@ -1,6 +1,5 @@
 package com.aetheri.application.port.in.imagemetadata;
 
-import com.aetheri.application.result.imagemetadata.ImageMetadataResult;
 import com.aetheri.domain.model.ImageMetadata;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

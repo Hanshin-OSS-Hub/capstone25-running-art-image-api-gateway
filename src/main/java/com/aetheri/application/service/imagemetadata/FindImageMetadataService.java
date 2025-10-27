@@ -1,6 +1,5 @@
 package com.aetheri.application.service.imagemetadata;
 
-import com.aetheri.application.result.imagemetadata.ImageMetadataResult;
 import com.aetheri.application.port.in.imagemetadata.FindImageMetadataUseCase;
 import com.aetheri.application.port.out.r2dbc.ImageMetadataRepositoryPort;
 import com.aetheri.domain.exception.BusinessException;
