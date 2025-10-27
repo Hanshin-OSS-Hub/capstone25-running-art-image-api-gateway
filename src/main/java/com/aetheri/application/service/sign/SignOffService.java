@@ -7,9 +7,9 @@ import com.aetheri.application.port.out.kakao.KakaoUnlinkPort;
 import com.aetheri.application.port.out.r2dbc.KakaoTokenRepositoryPort;
 import com.aetheri.application.port.out.r2dbc.RunnerRepositoryPort;
 import com.aetheri.application.port.out.token.RedisRefreshTokenRepositoryPort;
-import com.aetheri.application.result.kakao.KakaoTokenResult;
 import com.aetheri.domain.exception.BusinessException;
 import com.aetheri.domain.exception.message.ErrorMessage;
+import com.aetheri.domain.model.KakaoToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class SignOffService implements SignOffUseCase {
      * <p>회원 탈퇴 절차는 다음과 같습니다:</p>
      * <ol>
      * <li>데이터베이스에서 카카오 토큰 조회 ({@link #findKakaoToken(Long)})</li>
-     * <li>카카오 리프레시 토큰 갱신 (안전한 액세스 토큰 확보) ({@link #refreshKakaoToken(KakaoTokenResult)})</li>
+     * <li>카카오 리프레시 토큰 갱신 (안전한 액세스 토큰 확보) ({@link #refreshKakaoToken(KakaoToken)})</li>
      * <li>카카오 API를 통한 사용자 계정 연동 해제(Unlink) ({@link #unlinkKakaoUser(KakaoIssueTokenResult)})</li>
      * <li>데이터베이스의 카카오 토큰 정보 삭제 ({@link #deleteKakaoToken(Long)})</li>
      * <li>Redis의 리프레시 토큰 정보 삭제 ({@link #deleteRefreshTokenFromRedis(Long)})</li>
@@ -77,7 +77,7 @@ public class SignOffService implements SignOffUseCase {
      * @return 조회된 {@code KakaoToken} 엔티티를 발행하는 {@code Mono}입니다.
      * @throws BusinessException 해당 사용자 ID로 카카오 토큰을 찾을 수 없을 경우 {@code NOT_FOUND_KAKAO_TOKEN} 예외를 발생시킵니다.
      */
-    private Mono<KakaoTokenResult> findKakaoToken(Long runnerId) {
+    private Mono<KakaoToken> findKakaoToken(Long runnerId) {
         return kakaoTokenRepositoryPort.findByRunnerId(runnerId)
                 .switchIfEmpty(Mono.error(new BusinessException(
                         ErrorMessage.NOT_FOUND_KAKAO_TOKEN,
@@ -91,9 +91,9 @@ public class SignOffService implements SignOffUseCase {
      * @param kakaoToken 재발급에 사용할 리프레시 토큰이 담긴 {@code KakaoToken} 객체입니다.
      * @return 카카오 API에서 받은 새로운 토큰 응답({@code KakaoTokenResponse})을 발행하는 {@code Mono}입니다.
      */
-    private Mono<KakaoIssueTokenResult> refreshKakaoToken(KakaoTokenResult kakaoToken) {
+    private Mono<KakaoIssueTokenResult> refreshKakaoToken(KakaoToken kakaoToken) {
         return kakaoRefreshTokenPort
-                .refreshAccessToken(kakaoToken.refreshToken());
+                .refreshAccessToken(kakaoToken.getRefreshToken());
     }
 
     /**

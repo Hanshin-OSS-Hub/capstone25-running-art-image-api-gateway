@@ -3,6 +3,7 @@ package com.aetheri.infrastructure.adapter.in.web.dto.out;
 import com.aetheri.application.result.imagemetadata.ImageMetadataResult;
 import com.aetheri.domain.enums.image.Proficiency;
 import com.aetheri.domain.enums.image.Shape;
+import com.aetheri.domain.model.ImageMetadata;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -81,17 +82,17 @@ public record ImageMetadataResponse(
         )
         LocalDate modifiedAt
 ) {
-        public static ImageMetadataResponse toResponse(ImageMetadataResult result) {
+        public static ImageMetadataResponse toResponse(ImageMetadata result) {
                 return ImageMetadataResponse.builder()
-                        .title(result.title())
-                        .description(result.description())
-                        .location(result.location())
-                        .imagePath(result.imagePath())
-                        .shape(result.shape())
-                        .proficiency(result.proficiency())
-                        .shared(result.shared())
-                        .createdAt(result.createdAt())
-                        .modifiedAt(result.modifiedAt())
+                        .title(result.getTitle())
+                        .description(result.getDescription())
+                        .location(result.getLocation())
+                        .imagePath(result.getImagePath())
+                        .shape(result.getShape())
+                        .proficiency(result.getProficiency())
+                        .shared(result.getShared())
+                        .createdAt(result.getCreatedAt())
+                        .modifiedAt(result.getModifiedAt())
                         .build();
         }
 }

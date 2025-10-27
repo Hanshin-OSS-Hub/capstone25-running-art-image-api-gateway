@@ -1,8 +1,6 @@
 package com.aetheri.infrastructure.adapter.out.r2dbc;
 
 import com.aetheri.application.port.out.r2dbc.KakaoTokenRepositoryPort;
-import com.aetheri.application.result.kakao.KakaoTokenResult;
-import com.aetheri.infrastructure.adapter.out.r2dbc.mapper.KakaoTokenMapper;
 import com.aetheri.application.port.out.r2dbc.KakaoTokenR2dbcRepository;
 import com.aetheri.domain.model.KakaoToken;
 import lombok.RequiredArgsConstructor;
@@ -61,8 +59,8 @@ public class KakaoTokenRepositoryR2dbcAdapter implements KakaoTokenRepositoryPor
      * @return 조회된 {@code KakaoToken} 엔티티를 발행하는 {@code Mono}입니다. 토큰이 없으면 {@code Mono.empty()}를 발행합니다.
      */
     @Override
-    public Mono<KakaoTokenResult> findByRunnerId(Long runnerId) {
-        return repository.findByRunnerId(runnerId).map(KakaoTokenMapper::toResult);
+    public Mono<KakaoToken> findByRunnerId(Long runnerId) {
+        return repository.findByRunnerId(runnerId);
     }
 
     /**

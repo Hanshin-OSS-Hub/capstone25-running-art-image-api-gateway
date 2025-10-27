@@ -1,6 +1,6 @@
 package com.aetheri.application.port.out.r2dbc;
 
-import com.aetheri.application.result.kakao.KakaoTokenResult;
+import com.aetheri.domain.model.KakaoToken;
 import reactor.core.publisher.Mono;
 
 /**
@@ -31,7 +31,7 @@ public interface KakaoTokenRepositoryPort {
      * @param runnerId 조회할 토큰 정보의 소유자인 사용자의 고유 식별자(ID)입니다.
      * @return 조회된 카카오 토큰 엔티티({@code KakaoToken})를 발행하거나, 존재하지 않으면 비어있는 {@code Mono}를 발행합니다.
      */
-    Mono<KakaoTokenResult> findByRunnerId(Long runnerId);
+    Mono<KakaoToken> findByRunnerId(Long runnerId);
 
     /**
      * 사용자의 고유 식별자({@code runnerId})를 사용하여 데이터베이스에 저장된 카카오 토큰 정보를 삭제합니다.
