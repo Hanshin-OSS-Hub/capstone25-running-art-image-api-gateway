@@ -2,7 +2,6 @@ package com.aetheri.domain.model;
 
 import com.aetheri.domain.enums.image.Proficiency;
 import com.aetheri.domain.enums.image.Shape;
-import com.aetheri.infrastructure.adapter.in.web.dto.in.ImageMetadataUpdateRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -133,16 +132,18 @@ public class ImageMetadata {
     }
 
     public void update(String title, String description) {
-        if (!title.isBlank() && !title.isEmpty()) {
+        if (title != null && !title.isBlank()) {
             this.title = title;
         } else {
             this.title = "제목을 등록해주세요.";
         }
 
-        if (!description.isBlank() && !description.isEmpty()) {
+        if (description != null && !description.isBlank()) {
             this.description = description;
         } else {
             this.description = "설명을 등록해주세요.";
         }
+
+        this.modifiedAt = LocalDate.now();
     }
 }
