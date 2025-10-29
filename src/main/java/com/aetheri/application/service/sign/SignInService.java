@@ -176,8 +176,8 @@ public class SignInService implements SignInUseCase {
                 ).map(runner -> new KakaoTokenAndIdResult(
                         dto.accessToken(),
                         dto.refreshToken(),
-                        runner.id(), // 시스템 DB의 runner ID로 갱신
-                        runner.name())
+                        runner.getId(), // 시스템 DB의 runner ID로 갱신
+                        runner.getName())
                 );
     }
 

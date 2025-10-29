@@ -2,7 +2,7 @@ package com.aetheri.application.service.imagemetadata;
 
 import com.aetheri.application.command.imagemetadata.ImageMetadataSaveCommand;
 import com.aetheri.application.port.in.imagemetadata.SaveImageMetadataUseCase;
-import com.aetheri.application.port.out.imagemetadata.ImageMetadataRepositoryPort;
+import com.aetheri.application.port.out.r2dbc.ImageMetadataRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

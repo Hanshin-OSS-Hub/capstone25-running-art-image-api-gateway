@@ -2,10 +2,8 @@ package com.aetheri.infrastructure.adapter.out.r2dbc;
 
 import com.aetheri.application.command.runner.RunnerSaveCommand;
 import com.aetheri.application.port.out.r2dbc.RunnerRepositoryPort;
-import com.aetheri.application.result.runner.RunnerResult;
-import com.aetheri.infrastructure.adapter.out.r2dbc.mapper.RunnerMapper;
-import com.aetheri.infrastructure.persistence.repository.RunnerR2dbcRepository;
-import com.aetheri.infrastructure.persistence.entity.Runner;
+import com.aetheri.application.port.out.r2dbc.RunnerR2dbcRepository;
+import com.aetheri.domain.model.Runner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
@@ -31,8 +29,8 @@ public class RunnerRepositoryR2dbcAdapter implements RunnerRepositoryPort {
      * @return 조회된 {@code RunnerResult} 엔티티를 발행하는 {@code Mono}입니다. 사용자가 없으면 {@code Mono.empty()}를 발행합니다.
      */
     @Override
-    public Mono<RunnerResult> findByKakaoId(Long kakaoId) {
-        return repository.findByKakaoId(kakaoId).map(RunnerMapper::toResult);
+    public Mono<Runner> findByKakaoId(Long kakaoId) {
+        return repository.findByKakaoId(kakaoId);
     }
 
     /**
@@ -42,12 +40,12 @@ public class RunnerRepositoryR2dbcAdapter implements RunnerRepositoryPort {
      * @return 저장/갱신된 {@code RunnerResult} 엔티티를 발행하는 {@code Mono}입니다.
      */
     @Override
-    public Mono<RunnerResult> save(RunnerSaveCommand command) {
+    public Mono<Runner> save(RunnerSaveCommand command) {
         Runner entity = Runner.builder()
                 .name(command.name())
                 .kakaoId(command.kakaoId())
                 .build();
-        return repository.save(entity).map(RunnerMapper::toResult);
+        return repository.save(entity);
     }
 
     /**
@@ -68,8 +66,8 @@ public class RunnerRepositoryR2dbcAdapter implements RunnerRepositoryPort {
      * @return 조회된 {@code RunnerResult} 엔티티를 발행하는 {@code Mono}입니다.
      */
     @Override
-    public Mono<RunnerResult> findById(Long id) {
-        return repository.findById(id).map(RunnerMapper::toResult);
+    public Mono<Runner> findById(Long id) {
+        return repository.findById(id);
     }
 
     /**

@@ -1,8 +1,8 @@
-package com.aetheri.application.port.out.imagemetadata;
+package com.aetheri.application.port.out.r2dbc;
 
 import com.aetheri.application.command.imagemetadata.ImageMetadataSaveCommand;
 import com.aetheri.application.command.imagemetadata.ImageMetadataUpdateCommand;
-import com.aetheri.application.result.imagemetadata.ImageMetadataResult;
+import com.aetheri.domain.model.ImageMetadata;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -27,7 +27,7 @@ public interface ImageMetadataRepositoryPort {
      * @param imageId 메타데이터를 검색할 이미지의 고유 식별자
      * @return 발견되면 ImageMetadata를 방출하고, 일치하는 레코드가 없으면 빈 Mono를 방출하는 Mono
      */
-    Mono<ImageMetadataResult> findById(Long imageId);
+    Mono<ImageMetadata> findById(Long imageId);
 
     /**
      * 주어진 러너(사용자) ID와 관련된 모든 이미지 메타데이터 레코드를 검색합니다.
@@ -35,7 +35,7 @@ public interface ImageMetadataRepositoryPort {
      * @param runnerId 이미지 메타데이터를 반환해야 하는 러너(사용자) 식별자
      * @return 지정된 러너에 대한 ImageMetadata의 반응형 스트림(Flux); 발견되지 않으면 빈 Flux로 완료됨
      */
-    Flux<ImageMetadataResult> findByRunnerId(Long runnerId);
+    Flux<ImageMetadata> findByRunnerId(Long runnerId);
 
     /**
      * 지정된 러너와 이미지에 대한 이미지 메타데이터를 업데이트합니다.

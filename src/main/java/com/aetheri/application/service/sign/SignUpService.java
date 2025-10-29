@@ -3,9 +3,9 @@ package com.aetheri.application.service.sign;
 import com.aetheri.application.command.runner.RunnerSaveCommand;
 import com.aetheri.application.port.in.sign.SignUpUseCase;
 import com.aetheri.application.port.out.r2dbc.RunnerRepositoryPort;
-import com.aetheri.application.result.runner.RunnerResult;
 import com.aetheri.domain.exception.BusinessException;
 import com.aetheri.domain.exception.message.ErrorMessage;
+import com.aetheri.domain.model.Runner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -71,7 +71,7 @@ public class SignUpService implements SignUpUseCase {
      * @param name 사용자의 이름입니다.
      * @return 저장된 {@code Runner} 엔티티를 발행하는 {@code Mono}입니다.
      */
-    private Mono<RunnerResult> saveRunner(Long kakaoId, String name) {
+    private Mono<Runner> saveRunner(Long kakaoId, String name) {
         RunnerSaveCommand runner = RunnerSaveCommand.builder()
                 .name(name)
                 .kakaoId(kakaoId)

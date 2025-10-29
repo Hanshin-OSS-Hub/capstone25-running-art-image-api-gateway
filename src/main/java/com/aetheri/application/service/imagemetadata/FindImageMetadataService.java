@@ -1,10 +1,10 @@
 package com.aetheri.application.service.imagemetadata;
 
-import com.aetheri.application.result.imagemetadata.ImageMetadataResult;
 import com.aetheri.application.port.in.imagemetadata.FindImageMetadataUseCase;
-import com.aetheri.application.port.out.imagemetadata.ImageMetadataRepositoryPort;
+import com.aetheri.application.port.out.r2dbc.ImageMetadataRepositoryPort;
 import com.aetheri.domain.exception.BusinessException;
 import com.aetheri.domain.exception.message.ErrorMessage;
+import com.aetheri.domain.model.ImageMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,12 +38,12 @@ public class FindImageMetadataService implements FindImageMetadataUseCase {
      * 요청자에게 접근 권한이 없을 때(RUNNER\_IS\_NOT\_OWNER\_OF\_IMAGE\_METADATA) 발생합니다.
      */
     @Override
-    public Mono<ImageMetadataResult> findImageMetadataById(Long runnerId, Long imageId) {
+    public Mono<ImageMetadata> findImageMetadataById(Long runnerId, Long imageId) {
         return imageMetadataRepositoryPort.findById(imageId)
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorMessage.NOT_FOUND_IMAGE_METADATA, "이미지를 찾을 수 없습니다.")))
                 .flatMap(imageMetadata -> {
                     log.info("[FindImageMetadataMetadataService] 사용자 {}가 이미지 {}를 조회했습니다.", runnerId, imageId);
-                    if (imageMetadata.shared() || imageMetadata.runnerId().equals(runnerId)) {
+                    if (imageMetadata.getShared() || imageMetadata.getRunnerId().equals(runnerId)) {
                         return Mono.just(imageMetadata);
                     } else {
                         return Mono.error(
@@ -68,12 +68,12 @@ public class FindImageMetadataService implements FindImageMetadataUseCase {
      * 이미지가 존재하지만 공유되지 않았을 때(RUNNER\_IS\_NOT\_OWNER\_OF\_IMAGE\_METADATA) 발생합니다.
      */
     @Override
-    public Mono<ImageMetadataResult> findImageMetadataById(Long imageId) {
+    public Mono<ImageMetadata> findImageMetadataById(Long imageId) {
         return imageMetadataRepositoryPort.findById(imageId)
                 .switchIfEmpty(Mono.error(new BusinessException(ErrorMessage.NOT_FOUND_IMAGE_METADATA, "이미지를 찾을 수 없습니다.")))
                 .flatMap(imageMetadata -> {
                     log.info("[FindImageMetadataMetadataService] 이미지 {}를 조회했습니다.", imageId);
-                    if (imageMetadata.shared()) {
+                    if (imageMetadata.getShared()) {
                         return Mono.just(imageMetadata);
                     } else {
                         return Mono.error(
@@ -93,7 +93,7 @@ public class FindImageMetadataService implements FindImageMetadataUseCase {
      * @return 해당 사용자가 소유한 {@code ImageMetadataResponse} 객체들을 연속적으로 발행하는 {@code Flux} 스트림입니다.
      */
     @Override
-    public Flux<ImageMetadataResult> findImageMetadataByRunnerId(Long runnerId) {
+    public Flux<ImageMetadata> findImageMetadataByRunnerId(Long runnerId) {
         return imageMetadataRepositoryPort.findByRunnerId(runnerId)
                 .doOnComplete(() -> log.info("[FindImageMetadataMetadataService] 사용자 {}의 이미지를 조회했습니다.", runnerId));
     }

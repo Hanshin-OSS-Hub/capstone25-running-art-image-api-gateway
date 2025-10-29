@@ -1,4 +1,4 @@
-package com.aetheri.infrastructure.persistence.entity;
+package com.aetheri.domain.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
