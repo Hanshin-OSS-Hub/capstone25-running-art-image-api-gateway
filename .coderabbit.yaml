@@ -11,8 +11,8 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
-  base_branches:
-    - ".*"  # 모든 브랜치(master, main, feature/* 등)를 대상으로 하는 PR을 리뷰합니다.
+    base_branches:
+      - ".*"  # 모든 브랜치(master, main, feature/* 등)를 대상으로 하는 PR을 리뷰합니다.
 
   path_instructions:
     - path: "src/main/java/**/*.java"
