@@ -26,7 +26,7 @@ import java.net.URI;
  */
 @Slf4j
 @Component
-public class AuthHandler {
+public class KakaoAuthHandler {
     private final SignInUseCase signInUseCase;
     private final SignOffUseCase signOffUseCase;
     private final SignOutUseCase signOutUseCase;
@@ -42,7 +42,7 @@ public class AuthHandler {
      * <p>인증 관련 유스케이스와 설정({@code KakaoProperties}, {@code JWTProperties})으로부터
      * 필요한 속성들을 초기화합니다.</p>
      */
-    public AuthHandler(
+    public KakaoAuthHandler(
             SignInUseCase signInUseCase,
             SignOffUseCase signOffUseCase,
             SignOutUseCase signOutUseCase,

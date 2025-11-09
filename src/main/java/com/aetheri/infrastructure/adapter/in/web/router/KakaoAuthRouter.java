@@ -1,7 +1,7 @@
 package com.aetheri.infrastructure.adapter.in.web.router;
 
 
-import com.aetheri.infrastructure.adapter.in.web.handler.AuthHandler;
+import com.aetheri.infrastructure.adapter.in.web.handler.KakaoAuthHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.RouterOperation;
@@ -25,7 +25,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
  */
 @Slf4j
 @Configuration
-public class AuthRouter {
+public class KakaoAuthRouter {
 
     /**
      * 인증 관련 라우팅 규칙을 정의하는 {@code RouterFunction} 빈을 생성합니다.
@@ -38,7 +38,7 @@ public class AuthRouter {
      * <li>{@code POST /api/v1/auth/sign-out}: 서비스 로그아웃</li>
      * </ul>
      *
-     * @param authHandler 인증 요청을 처리하는 핸들러입니다.
+     * @param kakaoAuthHandler 인증 요청을 처리하는 핸들러입니다.
      * @return 정의된 라우팅 규칙을 포함하는 {@code RouterFunction<ServerResponse>}입니다.
      */
     @Bean
@@ -48,7 +48,7 @@ public class AuthRouter {
                     path = "/api/v1/auth/authorization/kakao",
                     produces = {MediaType.APPLICATION_JSON_VALUE},
                     method = RequestMethod.GET,
-                    beanClass = AuthHandler.class,
+                    beanClass = KakaoAuthHandler.class,
                     beanMethod = "redirectToKakaoLogin",
                     operation = @Operation(
                             operationId = "authRedirectToKakao",
@@ -61,7 +61,7 @@ public class AuthRouter {
                     path = "/api/v1/auth/sign-in",
                     produces = {MediaType.APPLICATION_JSON_VALUE},
                     method = RequestMethod.GET,
-                    beanClass = AuthHandler.class,
+                    beanClass = KakaoAuthHandler.class,
                     beanMethod = "getKakaoAccessToken",
                     operation = @Operation(
                             operationId = "authSignIn",
@@ -74,7 +74,7 @@ public class AuthRouter {
                     path = "/api/v1/auth/sign-off",
                     produces = {MediaType.APPLICATION_JSON_VALUE},
                     method = RequestMethod.POST,
-                    beanClass = AuthHandler.class,
+                    beanClass = KakaoAuthHandler.class,
                     beanMethod = "signOff",
                     operation = @Operation(
                             operationId = "authSignOff",
@@ -87,7 +87,7 @@ public class AuthRouter {
                     path = "/api/v1/auth/sign-out",
                     produces = {MediaType.APPLICATION_JSON_VALUE},
                     method = RequestMethod.POST,
-                    beanClass = AuthHandler.class,
+                    beanClass = KakaoAuthHandler.class,
                     beanMethod = "signOut",
                     operation = @Operation(
                             operationId = "authSignOut",
@@ -96,17 +96,17 @@ public class AuthRouter {
                     )
             )
     })
-    public RouterFunction<ServerResponse> authRoutes(AuthHandler authHandler) {
+    public RouterFunction<ServerResponse> authRoutes(KakaoAuthHandler kakaoAuthHandler) {
         return RouterFunctions.route()
                 .path("/api/v1/auth", builder -> builder
                         // 카카오 인가 코드 요청을 위한 리다이렉트 URL
-                        .GET("/authorization/kakao", authHandler::redirectToKakaoLogin)
+                        .GET("/authorization/kakao", kakaoAuthHandler::redirectToKakaoLogin)
                         // 카카오로부터 인가 코드를 받아 액세스 토큰 발급 및 로그인 처리
-                        .GET("/sign-in", authHandler::getKakaoAccessToken)
+                        .GET("/sign-in", kakaoAuthHandler::getKakaoAccessToken)
                         // 회원 탈퇴 (카카오 연결 끊기 포함)
-                        .POST("/sign-off", authHandler::signOff)
+                        .POST("/sign-off", kakaoAuthHandler::signOff)
                         // 서비스 로그아웃 (토큰 무효화)
-                        .POST("/sign-out", authHandler::signOut))
+                        .POST("/sign-out", kakaoAuthHandler::signOut))
                 .build();
     }
 }
