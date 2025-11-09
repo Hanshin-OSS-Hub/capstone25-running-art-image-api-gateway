@@ -5,8 +5,10 @@ import com.aetheri.infrastructure.config.properties.JWTProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -33,17 +35,7 @@ public class TokenRefreshHandler {
     }
 
     public Mono<ServerResponse> tokenRefresh(ServerRequest request) {
-        // 1. 모든 쿠키를 가져옵니다.
-        MultiValueMap<String, HttpCookie> cookies = request.cookies();
-
-        // 2. "refresh_token" 이름의 쿠키 리스트를 가져옵니다.
-        // 쿠키 이름으로 여러 개의 쿠키가 올 수 있으므로 List<HttpCookie> 형태로 반환됩니다.
-        HttpCookie refreshTokenCookie = cookies.getFirst(REFRESH_TOKEN_COOKIE);
-
-        String refreshToken = null;
-        if (refreshTokenCookie != null) {
-            refreshToken = refreshTokenCookie.getValue();
-        }
+        String refreshToken = resolveToken((ServerHttpRequest) request);
 
         return refreshTokenUseCase.reissueTokens(refreshToken)
                 .flatMap(response -> {
@@ -61,5 +53,14 @@ public class TokenRefreshHandler {
                             .header(ACCESS_TOKEN_HEADER, response.accessToken())
                             .body(Mono.empty(), Void.class);
                 });
+    }
+
+    private String resolveToken(ServerHttpRequest request) {
+        String bearerToken = request.getHeaders().getFirst(ACCESS_TOKEN_HEADER);
+        // JWTProperties에 설정된 액세스 토큰 헤더 이름 사용
+        if (StringUtils.hasText(bearerToken) && StringUtils.startsWithIgnoreCase(bearerToken, "Bearer ")) {
+            return bearerToken.substring(7).trim();
+        }
+        return null;
     }
 }
