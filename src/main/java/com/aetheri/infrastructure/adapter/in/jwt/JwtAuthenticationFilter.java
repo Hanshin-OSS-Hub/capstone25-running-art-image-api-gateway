@@ -1,6 +1,5 @@
 package com.aetheri.infrastructure.adapter.in.jwt;
 
-import com.aetheri.application.port.in.token.RefreshTokenUseCase;
 import com.aetheri.application.port.out.jwt.JwtTokenResolverPort;
 import com.aetheri.application.port.out.jwt.JwtTokenValidatorPort;
 import com.aetheri.application.service.token.RefreshTokenService;
@@ -38,7 +37,6 @@ import java.util.stream.Collectors;
  *
  * @see JwtTokenValidatorPort 토큰 유효성 검증 포트
  * @see JwtTokenResolverPort 토큰 내용(ID, 역할) 추출 포트
- * @see RefreshTokenService 토큰 재발급 서비스
  * @see JWTProperties JWT 설정 정보
  */
 @Slf4j
@@ -47,7 +45,6 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     private final JwtTokenValidatorPort jwtTokenValidatorPort;
     private final JwtTokenResolverPort jwtTokenResolverPort;
-    private final RefreshTokenUseCase refreshTokenUseCase;
     private final JWTProperties jwtProperties;
 
     /**
