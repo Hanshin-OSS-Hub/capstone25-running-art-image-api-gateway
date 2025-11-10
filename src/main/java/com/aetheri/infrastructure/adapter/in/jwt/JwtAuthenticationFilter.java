@@ -2,7 +2,6 @@ package com.aetheri.infrastructure.adapter.in.jwt;
 
 import com.aetheri.application.port.out.jwt.JwtTokenResolverPort;
 import com.aetheri.application.port.out.jwt.JwtTokenValidatorPort;
-import com.aetheri.application.service.token.RefreshTokenService;
 import com.aetheri.infrastructure.config.properties.JWTProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
