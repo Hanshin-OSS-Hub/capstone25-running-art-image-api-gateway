@@ -27,15 +27,13 @@ import java.util.stream.Collectors;
 /**
  * Spring WebFlux 애플리케이션에서 JWT(JSON Web Token) 기반 인증을 처리하는 {@link WebFilter} 구현체입니다.
  *
- * <p>이 필터는 들어오는 요청에서 액세스 토큰을 확인하고, 유효성을 검증하며, 토큰이 만료되었을 경우
- * 리프레시 토큰을 사용하여 새 토큰을 재발급하는 로직을 포함합니다.</p>
+ * <p>이 필터는 들어오는 요청에서 액세스 토큰을 확인하고 유효성을 검증합니다.</p>
  *
  * <h3>주요 역할:</h3>
  * <ul>
  * <li>요청 헤더에서 **액세스 토큰** 추출 및 유효성 검사</li>
  * <li>유효한 경우, 토큰 정보로 {@link Authentication} 객체를 생성하여 {@link ReactiveSecurityContextHolder}에 저장</li>
- * <li>만료된 액세스 토큰의 경우, 쿠키에서 **리프레시 토큰**을 추출하여 토큰 재발급을 시도 (슬라이딩 세션 구현)</li>
- * <li>재발급 성공 시, 새 액세스 토큰은 응답 헤더에, 새 리프레시 토큰은 {@code HttpOnly} 쿠키에 설정</li>
+ * <li>유효하지 않은 토큰의 경우, 인증 정보 없이 필터 체인을 진행 (Security 설정에서 401 처리)</li>
  * </ul>
  *
  * @see JwtTokenValidatorPort 토큰 유효성 검증 포트
