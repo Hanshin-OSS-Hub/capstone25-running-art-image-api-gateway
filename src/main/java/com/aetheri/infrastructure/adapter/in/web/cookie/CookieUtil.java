@@ -14,7 +14,7 @@ public class CookieUtil implements CookieUseCase {
 
     public CookieUtil(JWTProperties jwtProperties) {
         REFRESH_TOKEN_COOKIE = jwtProperties.refreshTokenCookie();
-        REFRESH_TOKEN_EXPIRE_TIME = Duration.ofDays(jwtProperties.refreshTokenExpirationDays())
+        REFRESH_TOKEN_EXPIRE_TIME = Duration.ofDays(jwtProperties.refreshTokenExpirationDays());
     }
 
     public ResponseCookie buildCookie(String refreshToken) {
