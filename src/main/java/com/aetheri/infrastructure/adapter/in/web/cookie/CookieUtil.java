@@ -10,11 +10,11 @@ import java.time.Duration;
 @Component
 public class CookieUtil implements CookieUseCase {
     private final String REFRESH_TOKEN_COOKIE;
-    private final long REFRESH_TOKEN_EXPIRE_TIME;
+    private final Duration REFRESH_TOKEN_EXPIRE_TIME;
 
     public CookieUtil(JWTProperties jwtProperties) {
         REFRESH_TOKEN_COOKIE = jwtProperties.refreshTokenCookie();
-        REFRESH_TOKEN_EXPIRE_TIME = jwtProperties.refreshTokenExpirationDays() * Duration.ofDays(1).toMillis();
+        REFRESH_TOKEN_EXPIRE_TIME = Duration.ofDays(jwtProperties.refreshTokenExpirationDays())
     }
 
     public ResponseCookie buildCookie(String refreshToken) {
