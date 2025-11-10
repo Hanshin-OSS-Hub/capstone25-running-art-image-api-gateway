@@ -17,6 +17,7 @@ public class TokenRefreshHandler {
     private final RefreshTokenUseCase refreshTokenUseCase;
     private final CookieUseCase cookieUseCase;
     private final String ACCESS_TOKEN_HEADER;
+    private final String REFRESH_TOKEN_COOKIE;
 
     public TokenRefreshHandler(
             RefreshTokenUseCase refreshTokenUseCase,
@@ -26,6 +27,7 @@ public class TokenRefreshHandler {
         this.refreshTokenUseCase = refreshTokenUseCase;
         this.cookieUseCase = cookieUseCase;
         this.ACCESS_TOKEN_HEADER = jwtProperties.accessTokenHeader();
+        this.REFRESH_TOKEN_COOKIE = jwtProperties.refreshTokenCookie();
     }
 
     public Mono<ServerResponse> tokenRefresh(ServerRequest request) {
@@ -41,10 +43,9 @@ public class TokenRefreshHandler {
     }
 
     private String resolveToken(ServerHttpRequest request) {
-        String bearerToken = request.getHeaders().getFirst(ACCESS_TOKEN_HEADER);
-        // JWTProperties에 설정된 액세스 토큰 헤더 이름 사용
-        if (StringUtils.hasText(bearerToken) && StringUtils.startsWithIgnoreCase(bearerToken, "Bearer ")) {
-            return bearerToken.substring(7).trim();
+        var cookie = request.getCookies().getFirst(REFRESH_TOKEN_COOKIE);
+        if (cookie != null && StringUtils.hasText(cookie.getValue())) {
+            return cookie.getValue();
         }
         return null;
     }
