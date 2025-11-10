@@ -9,7 +9,6 @@ import com.aetheri.domain.exception.BusinessException;
 import com.aetheri.domain.exception.message.ErrorMessage;
 import com.aetheri.infrastructure.config.properties.JWTProperties;
 import com.aetheri.infrastructure.config.properties.KakaoProperties;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.server.ServerRequest;
