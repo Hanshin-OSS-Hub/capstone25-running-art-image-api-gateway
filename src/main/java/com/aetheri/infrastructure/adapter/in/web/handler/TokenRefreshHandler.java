@@ -29,7 +29,7 @@ public class TokenRefreshHandler {
     }
 
     public Mono<ServerResponse> tokenRefresh(ServerRequest request) {
-        String refreshToken = resolveToken((ServerHttpRequest) request);
+        String refreshToken = resolveToken(request.exchange().getRequest());
 
         return refreshTokenUseCase.reissueTokens(refreshToken)
                 .flatMap(response ->
