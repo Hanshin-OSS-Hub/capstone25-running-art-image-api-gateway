@@ -1,5 +1,6 @@
 package com.aetheri.infrastructure.adapter.in.web.handler;
 
+import com.aetheri.application.port.in.cookie.CookieUseCase;
 import com.aetheri.application.port.in.sign.SignInUseCase;
 import com.aetheri.application.port.in.sign.SignOffUseCase;
 import com.aetheri.application.port.in.sign.SignOutUseCase;
@@ -30,6 +31,7 @@ public class KakaoAuthHandler {
     private final SignInUseCase signInUseCase;
     private final SignOffUseCase signOffUseCase;
     private final SignOutUseCase signOutUseCase;
+    private final CookieUseCase cookieUseCase;
 
     private final String clientId;
     private final String redirectUri;
@@ -46,12 +48,15 @@ public class KakaoAuthHandler {
             SignInUseCase signInUseCase,
             SignOffUseCase signOffUseCase,
             SignOutUseCase signOutUseCase,
+            CookieUseCase cookieUseCase,
             KakaoProperties kakaoProperties,
             JWTProperties jwtProperties
     ) {
         this.signInUseCase = signInUseCase;
         this.signOffUseCase = signOffUseCase;
         this.signOutUseCase = signOutUseCase;
+        this.cookieUseCase = cookieUseCase;
+
         this.clientId = kakaoProperties.clientId();
         this.redirectUri = kakaoProperties.redirectUri();
         this.refreshTokenCookie = jwtProperties.refreshTokenCookie();
@@ -93,20 +98,10 @@ public class KakaoAuthHandler {
                 .flatMap(response -> { // 3. 응답 처리 및 토큰 설정
                     log.info("[AuthHandler] 로그인 성공: \naccessToken={} \n refreshToken={}", response.accessToken(), response.refreshToken());
 
-                    // 리프레시 토큰을 HTTP Only 쿠키로 설정
-                    ResponseCookie cookie = ResponseCookie
-                            .from(refreshTokenCookie, response.refreshToken())
-                            .httpOnly(true)     // JavaScript 접근 방지
-                            .secure(true)       // HTTPS에서만 전송
-                            .path("/")          // 전체 경로에서 유효
-                            .sameSite("Strict") // CSRF 공격 방지
-                            .maxAge(response.refreshTokenExpirationTime()) // 쿠키 만료 시간 설정
-                            .build();
-
                     // 액세스 토큰은 응답 헤더에 설정
                     return ServerResponse.ok()
                             .header(accessTokenHeader, response.accessToken())
-                            .cookie(cookie)
+                            .cookie(cookieUseCase.buildCookie(response.refreshToken()))
                             .body(Mono.empty(), Void.class);
                 });
     }
