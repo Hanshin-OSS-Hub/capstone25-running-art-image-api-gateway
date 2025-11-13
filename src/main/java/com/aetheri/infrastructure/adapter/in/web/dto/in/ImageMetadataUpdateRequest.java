@@ -14,6 +14,10 @@ import jakarta.validation.constraints.NotNull;
  * @param description 이미지에 대한 새로운 간략한 설명입니다.
  * @see ImageMetadataUpdateCommand
  */
+@Schema(
+        description = "이미지 메타데이터 수정 요청을 위한 정보입니다.",
+        requiredMode = RequiredMode.REQUIRED
+)
 public record ImageMetadataUpdateRequest(
         @NotNull
         @Schema(
