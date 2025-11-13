@@ -17,6 +17,10 @@ import jakarta.validation.constraints.NotNull;
  * @param shape       이미지에 담긴 대상의 형태를 나타내는 열거형(Enum) 값입니다.
  * @see ImageMetadataSaveCommand
  */
+@Schema(
+        description = "이미지 메타데이터 저장을 요청하는 데 사용되는 레코드입니다.",
+        requiredMode = RequiredMode.REQUIRED
+)
 public record ImageMetadataSaveRequest(
         @NotNull
         @Schema(
