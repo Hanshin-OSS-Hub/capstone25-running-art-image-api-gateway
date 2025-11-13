@@ -61,7 +61,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/webjars/swagger-ui/**",
-                                "/api-docs/**"
+                                "/api-docs/**",
+                                "/v3/api-docs.yaml"
                         ).permitAll()
                         // 테스트용 경로 (예: 헬로 월드) 접근 허용
                         .pathMatchers("/api/hello/**").permitAll()
@@ -88,7 +89,6 @@ public class SecurityConfig {
                         new JwtAuthenticationFilter(
                                 jwtTokenValidatorPort,
                                 jwtTokenResolverPort,
-                                refreshTokenUseCase,
                                 jwtProperties
                         ),
                         SecurityWebFiltersOrder.AUTHENTICATION
