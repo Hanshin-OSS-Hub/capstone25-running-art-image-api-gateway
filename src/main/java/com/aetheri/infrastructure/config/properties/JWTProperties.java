@@ -29,6 +29,9 @@ public record JWTProperties(
          */
         int refreshTokenExpirationDays,
 
+        // 리프레쉬 토큰 바이트 길이
+        int refreshTokenByteLength,
+
         /**
          * JWT 서명 및 검증에 사용될 비밀 키 문자열입니다. (반드시 **Base64 인코딩된** 문자열이어야 함)
          * <p>HS256(256bit) 알고리즘 사용 시 최소 32바이트(256비트) 이상을 권장합니다.</p>
