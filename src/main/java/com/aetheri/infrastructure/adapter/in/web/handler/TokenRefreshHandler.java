@@ -39,7 +39,7 @@ public class TokenRefreshHandler {
                     .body(Mono.empty(), Void.class);
         }
 
-        return refreshTokenUseCase.reissueTokens(refreshToken)
+        return refreshTokenUseCase.refreshToken(refreshToken)
                 .flatMap(response ->
                         ServerResponse.ok()
                                 .cookie(cookieUseCase.buildCookie(response.refreshTokenIssueResult().refreshToken()))
