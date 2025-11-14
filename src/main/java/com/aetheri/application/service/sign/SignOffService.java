@@ -38,7 +38,7 @@ public class SignOffService implements SignOffUseCase {
      * <li>카카오 리프레시 토큰 갱신 (안전한 액세스 토큰 확보) ({@link #refreshKakaoToken(KakaoToken)})</li>
      * <li>카카오 API를 통한 사용자 계정 연동 해제(Unlink) ({@link #unlinkKakaoUser(KakaoIssueTokenResult)})</li>
      * <li>데이터베이스의 카카오 토큰 정보 삭제 ({@link #deleteKakaoToken(Long)})</li>
-     * <li>Redis의 리프레시 토큰 정보 삭제 ({@link #deleteRefreshTokenFromRedis(Long)})</li>
+     * <li>Redis의 리프레시 토큰 정보 삭제 ({@link #deleteRefreshTokenFromRedis(String)})</li>
      * <li>데이터베이스의 사용자 정보(Runner) 삭제 ({@link #deleteRunner(Long)})</li>
      * </ol>
      *
@@ -46,7 +46,7 @@ public class SignOffService implements SignOffUseCase {
      * @return 모든 탈퇴 처리가 완료되었을 때 종료되는 {@code Mono<Void>} 객체입니다.
      */
     @Override
-    public Mono<Void> signOff(Long runnerId) {
+    public Mono<Void> signOff(Long runnerId, String refreshToken) {
         // 데이터베이스에서 사용자 ID로 카카오 토큰을 찾습니다.
         return findKakaoToken(runnerId)
                 // 리프레시 토큰을 갱신하여 최신 액세스 토큰 확보
@@ -63,7 +63,7 @@ public class SignOffService implements SignOffUseCase {
                 // 데이터베이스에 저장된 카카오 토큰 삭제
                 .then(deleteKakaoToken(runnerId))
                 // Redis에서 시스템 리프레시 토큰 삭제
-                .then(deleteRefreshTokenFromRedis(runnerId))
+                .then(deleteRefreshTokenFromRedis(refreshToken))
                 // 데이터베이스에 저장된 사용자 정보 삭제
                 .then(deleteRunner(runnerId))
                 // 성공 시 로그 출력
@@ -128,13 +128,13 @@ public class SignOffService implements SignOffUseCase {
     }
 
     /**
-     * Redis 저장소에서 사용자 ID({@code runnerId})와 연결된 시스템 리프레시 토큰을 삭제합니다.
+     * Redis 저장소에서 사용자 ID({@code refreshToken})와 연결된 시스템 리프레시 토큰을 삭제합니다.
      *
-     * @param runnerId 리프레시 토큰을 삭제할 사용자의 고유 식별자(ID)입니다.
+     * @param refreshToken 리프레시 토큰을 삭제할 사용자의 고유 식별자(ID)입니다.
      * @return 삭제 처리가 완료되었을 때 종료되는 {@code Mono<Void>} 객체입니다.
      */
-    private Mono<Void> deleteRefreshTokenFromRedis(Long runnerId) {
+    private Mono<Void> deleteRefreshTokenFromRedis(String refreshToken) {
         // Redis 포트는 Boolean을 반환하지만, .then()을 사용하여 Mono<Void>로 변환하여 후속 작업 체이닝을 용이하게 합니다.
-        return redisRefreshTokenRepositoryPort.deleteRefreshToken(runnerId).then();
+        return redisRefreshTokenRepositoryPort.deleteRefreshToken(refreshToken).then();
     }
 }
