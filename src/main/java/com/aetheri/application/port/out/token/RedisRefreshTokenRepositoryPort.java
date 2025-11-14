@@ -1,5 +1,6 @@
 package com.aetheri.application.port.out.token;
 
+import com.aetheri.domain.model.RefreshTokenMetadata;
 import reactor.core.publisher.Mono;
 
 /**
@@ -16,25 +17,25 @@ public interface RedisRefreshTokenRepositoryPort {
      * <p>이 메서드는 토큰을 저장하고 적절한 만료 시간(TTL)을 설정하는 역할을 포함합니다.
      * 일반적으로 사용자의 ID를 키로, 리프레시 토큰 문자열을 값으로 저장합니다.</p>
      *
-     * @param userId 토큰을 저장할 사용자의 고유 식별자(ID)입니다.
-     * @param refreshToken Redis에 저장할 리프레시 토큰 문자열입니다.
+     * @param key 리프레쉬 토큰 본문입니다
+     * @param value {@code RefreshTokenMetadata} 리프레쉬 토큰 메타데이터입니다. 이는 Value 값으로 사용됩니다.
      * @return 저장 작업의 성공 여부({@code true} 또는 {@code false})를 발행하는 {@code Mono<Boolean>} 객체입니다.
      */
-    Mono<Boolean> saveRefreshToken(Long userId, String refreshToken);
+    Mono<Boolean> saveRefreshToken(String key, RefreshTokenMetadata value);
 
     /**
      * 주어진 사용자 ID를 사용하여 Redis에 저장된 리프레시 토큰을 조회합니다.
      *
-     * @param userId 토큰을 조회할 사용자의 고유 식별자(ID)입니다.
-     * @return 조회된 리프레시 토큰 문자열을 발행하거나, 존재하지 않으면 비어있는 {@code Mono}를 발행합니다.
+     * @param key 리프레쉬 토큰 본문입니다
+     * @return Redis에서 {@code RefreshTokenMetadata}를 조회합니다.
      */
-    Mono<String> getRefreshToken(Long userId);
+    Mono<RefreshTokenMetadata> getRefreshToken(String key);
 
     /**
      * 주어진 사용자 ID와 연결된 Redis의 리프레시 토큰을 삭제합니다.
      *
-     * @param userId 토큰을 삭제할 사용자의 고유 식별자(ID)입니다.
+     * @param key 리프레쉬 토큰 본문입니다
      * @return 삭제 작업의 성공 여부({@code true} 또는 {@code false})를 발행하는 {@code Mono<Boolean>} 객체입니다.
      */
-    Mono<Boolean> deleteRefreshToken(Long userId);
+    Mono<Boolean> deleteRefreshToken(String key);
 }
