@@ -9,8 +9,10 @@ import com.aetheri.domain.exception.BusinessException;
 import com.aetheri.domain.exception.message.ErrorMessage;
 import com.aetheri.infrastructure.config.properties.JWTProperties;
 import com.aetheri.infrastructure.config.properties.KakaoProperties;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -32,10 +34,10 @@ public class KakaoAuthHandler {
     private final SignOutUseCase signOutUseCase;
     private final CookieUseCase cookieUseCase;
 
-    private final String clientId;
-    private final String redirectUri;
-    private final String refreshTokenCookie;
-    private final String accessTokenHeader;
+    private final String CLIENT_ID;
+    private final String REDIRECT_URI;
+    private final String REFRESH_TOKEN_COOKIE;
+    private final String ACCESS_TOKEN_HEADER;
 
     /**
      * {@code AuthHandler}의 의존성 주입 생성자입니다.
@@ -56,10 +58,10 @@ public class KakaoAuthHandler {
         this.signOutUseCase = signOutUseCase;
         this.cookieUseCase = cookieUseCase;
 
-        this.clientId = kakaoProperties.clientId();
-        this.redirectUri = kakaoProperties.redirectUri();
-        this.refreshTokenCookie = jwtProperties.refreshTokenCookie();
-        this.accessTokenHeader = jwtProperties.accessTokenHeader();
+        this.CLIENT_ID = kakaoProperties.clientId();
+        this.REDIRECT_URI = kakaoProperties.redirectUri();
+        this.REFRESH_TOKEN_COOKIE = jwtProperties.refreshTokenCookie();
+        this.ACCESS_TOKEN_HEADER = jwtProperties.accessTokenHeader();
     }
 
     /**
@@ -73,8 +75,8 @@ public class KakaoAuthHandler {
     public Mono<ServerResponse> redirectToKakaoLogin(ServerRequest request) {
         String kakaoAuthUrl = UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com/oauth/authorize")
-                .queryParam("client_id", clientId)
-                .queryParam("redirect_uri", redirectUri)
+                .queryParam("client_id", CLIENT_ID)
+                .queryParam("redirect_uri", REDIRECT_URI)
                 .queryParam("response_type", "code")
                 .toUriString();
 
@@ -99,7 +101,7 @@ public class KakaoAuthHandler {
 
                     // 액세스 토큰은 응답 헤더에 설정
                     return ServerResponse.ok()
-                            .header(accessTokenHeader, response.accessToken())
+                            .header(ACCESS_TOKEN_HEADER, response.accessToken())
                             .cookie(cookieUseCase.buildCookie(response.refreshToken()))
                             .body(Mono.empty(), Void.class);
                 });
@@ -114,10 +116,11 @@ public class KakaoAuthHandler {
      * @return 처리 완료 시 204 No Content를 반환하는 {@code ServerResponse}입니다.
      */
     public Mono<ServerResponse> signOff(ServerRequest request) {
+        String refreshToken = resolveToken(request.exchange().getRequest());
         return AuthenticationUtils.extractRunnerIdFromRequest(request)
                 .flatMap(runnerId -> {
                     log.info("[AuthHandler] signOff: runnerId={}", runnerId);
-                    return signOffUseCase.signOff(runnerId).then(ServerResponse.noContent().build());
+                    return signOffUseCase.signOff(runnerId, refreshToken).then(ServerResponse.noContent().build());
                 });
     }
 
@@ -130,10 +133,11 @@ public class KakaoAuthHandler {
      * @return 처리 완료 시 204 No Content를 반환하는 {@code ServerResponse}입니다.
      */
     public Mono<ServerResponse> signOut(ServerRequest request) {
+        String refreshToken = resolveToken(request.exchange().getRequest());
         return AuthenticationUtils.extractRunnerIdFromRequest(request)
                 .flatMap(runnerId -> {
                     log.info("[AuthHandler] signOut: runnerId={}", runnerId);
-                    return signOutUseCase.signOut(runnerId).then(ServerResponse.noContent().build());
+                    return signOutUseCase.signOut(runnerId, refreshToken).then(ServerResponse.noContent().build());
                 });
     }
 
@@ -152,5 +156,13 @@ public class KakaoAuthHandler {
                                 "인증 코드를 응답에서 찾을 수 없습니다."
                         )
                 ));
+    }
+
+    private String resolveToken(ServerHttpRequest request) {
+        var cookie = request.getCookies().getFirst(REFRESH_TOKEN_COOKIE);
+        if (cookie != null && StringUtils.hasText(cookie.getValue())) {
+            return cookie.getValue();
+        }
+        return null;
     }
 }
