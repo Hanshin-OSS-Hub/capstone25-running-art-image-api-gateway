@@ -10,8 +10,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -26,9 +28,12 @@ import java.util.UUID;
 @Component
 public class JwtTokenProvider implements JwtTokenProviderPort {
 
+    private final SecureRandom secureRandom;
+
     private final SecretKey KEY;
     private final Duration ACCESS_TOKEN_VALIDITY_IN_HOUR;
     private final long REFRESH_TOKEN_VALIDATE_DAY;
+    private final int REFRESH_TOKEN_LENGTH;
 
     /**
      * {@code JwtTokenProvider}의 생성자입니다.
@@ -36,9 +41,16 @@ public class JwtTokenProvider implements JwtTokenProviderPort {
      * @param jwtProperties JWT 관련 설정 값들을 담고 있는 프로퍼티 객체입니다.
      * @param jwtKeyManager JWT 서명 키를 관리하는 컴포넌트입니다.
      */
-    public JwtTokenProvider(JWTProperties jwtProperties, JwtKeyManager jwtKeyManager) {
+    public JwtTokenProvider(
+            SecureRandom secureRandom,
+            JWTProperties jwtProperties,
+            JwtKeyManager jwtKeyManager
+    ) {
+        this.secureRandom = secureRandom;
+
         this.ACCESS_TOKEN_VALIDITY_IN_HOUR = jwtProperties.accessTokenValidityInHour();
         this.REFRESH_TOKEN_VALIDATE_DAY = jwtProperties.refreshTokenExpirationDays();
+        this.REFRESH_TOKEN_LENGTH = jwtProperties.refreshTokenByteLength();
         // 서명 키를 KeyManager로부터 가져옵니다.
         KEY = jwtKeyManager.getKey();
     }
@@ -97,24 +109,12 @@ public class JwtTokenProvider implements JwtTokenProviderPort {
     public RefreshTokenIssueResult generateRefreshToken(Authentication authentication) {
         log.debug("[TokenProvider] createRefreshToken({})", authentication.getName());
 
-        Instant issuedAt = Instant.now();
-        String jti = UUID.randomUUID().toString(); // 고유 식별자 생성
+        String opaqueToken = generateOpaqueToken();
+        Instant expire = Instant.now().plus(Duration.ofDays(REFRESH_TOKEN_VALIDATE_DAY));
 
-        Claims claims = createRefreshTokenClaims(authentication.getName(), jti);
+        log.info("[TokenProvider] Refresh Token created for username: {}. Token length: {}", authentication.getName(), opaqueToken.length());
 
-        Date issuedAtDate = Date.from(issuedAt);
-        Date expirationDate = Date.from(issuedAt.plus(Duration.ofDays(REFRESH_TOKEN_VALIDATE_DAY)));
-
-        String refreshToken = Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(issuedAtDate)
-                .setExpiration(expirationDate)
-                .signWith(KEY, SignatureAlgorithm.HS256)
-                .compact();
-
-        log.info("[TokenProvider] Refresh Token created for username: {}. Token length: {}", authentication.getName(), refreshToken.length());
-
-        return RefreshTokenIssueResult.of(refreshToken, jti, issuedAt);
+        return RefreshTokenIssueResult.of(opaqueToken, authentication.getName(), expire);
     }
 
     /**
@@ -128,5 +128,13 @@ public class JwtTokenProvider implements JwtTokenProviderPort {
         Claims claims = Jwts.claims().setSubject(String.valueOf(username));
         claims.put("jti", jti); // JWT ID 클레임 추가
         return claims;
+    }
+
+    private String generateOpaqueToken() {
+        byte[] randomBytes = new byte[REFRESH_TOKEN_LENGTH];
+        secureRandom.nextBytes(randomBytes);
+
+        // Base64 URL-safe 인코더를 사용하여 문자열로 변환 (패딩 제거)
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 }
