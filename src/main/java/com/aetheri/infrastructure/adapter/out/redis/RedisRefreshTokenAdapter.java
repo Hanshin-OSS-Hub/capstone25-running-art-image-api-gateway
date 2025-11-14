@@ -1,6 +1,7 @@
 package com.aetheri.infrastructure.adapter.out.redis;
 
 import com.aetheri.application.port.out.token.RedisRefreshTokenRepositoryPort;
+import com.aetheri.domain.model.RefreshTokenMetadata;
 import com.aetheri.infrastructure.config.properties.JWTProperties;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import java.time.Duration;
  */
 @Service
 public class RedisRefreshTokenAdapter implements RedisRefreshTokenRepositoryPort {
-    private final ReactiveRedisTemplate<String, String> redisTemplate;
+    private final ReactiveRedisTemplate<String, RefreshTokenMetadata> redisTemplate;
     private final JWTProperties jwtProperties;
 
     /**
@@ -27,7 +28,7 @@ public class RedisRefreshTokenAdapter implements RedisRefreshTokenRepositoryPort
      * @param jwtProperties JWT 관련 설정 값들을 담고 있는 프로퍼티 객체입니다. (토큰 만료일 및 Redis 키 구성에 사용)
      */
     public RedisRefreshTokenAdapter(
-            ReactiveRedisTemplate<String, String> redisTemplate,
+            ReactiveRedisTemplate<String, RefreshTokenMetadata> redisTemplate,
             JWTProperties jwtProperties
     ) {
         this.redisTemplate = redisTemplate;
@@ -40,28 +41,28 @@ public class RedisRefreshTokenAdapter implements RedisRefreshTokenRepositoryPort
      * <p>저장 시, JWT 설정에 정의된 리프레시 토큰 유효 기간({@code refreshTokenExpirationDays})에 맞춰 TTL(Time-To-Live)을 설정합니다.</p>
      *
      * @param userId 토큰 소유자의 고유 ID입니다.
-     * @param refreshToken 저장할 리프레시 토큰 문자열입니다.
+     * @param refreshTokenMetadata 저장할 리프레시 토큰 문자열입니다.
      * @return 저장 성공 여부를 나타내는 {@code Mono<Boolean>}입니다.
      */
     @Override
-    public Mono<Boolean> saveRefreshToken(Long userId, String refreshToken) {
+    public Mono<Boolean> saveRefreshToken(String userId, RefreshTokenMetadata refreshTokenMetadata) {
         String key = buildKey(userId);
         // 설정된 일자만큼의 TTL을 Duration으로 계산
         Duration ttl = Duration.ofDays(jwtProperties.refreshTokenExpirationDays());
 
         return redisTemplate.opsForValue()
-                .set(key, refreshToken, ttl);
+                .set(key, refreshTokenMetadata, ttl);
     }
 
     /**
      * 주어진 사용자 ID에 해당하는 리프레시 토큰을 Redis에서 조회합니다.
      *
-     * @param userId 조회할 토큰 소유자의 고유 ID입니다.
+     * @param refreshToken 조회할 토큰 소유자의 고유 ID입니다.
      * @return 조회된 리프레시 토큰 문자열을 발행하는 {@code Mono<String>}입니다. 토큰이 없으면 {@code Mono.empty()}를 발행합니다.
      */
     @Override
-    public Mono<String> getRefreshToken(Long userId) {
-        return redisTemplate.opsForValue().get(buildKey(userId));
+    public Mono<RefreshTokenMetadata> getRefreshToken(String refreshToken) {
+        return redisTemplate.opsForValue().get(buildKey(refreshToken));
     }
 
     /**
@@ -69,24 +70,24 @@ public class RedisRefreshTokenAdapter implements RedisRefreshTokenRepositoryPort
      *
      * <p>주로 로그아웃 또는 회원 탈퇴 시 호출됩니다.</p>
      *
-     * @param userId 삭제할 토큰 소유자의 고유 ID입니다.
+     * @param refreshToken 삭제할 토큰 소유자의 고유 ID입니다.
      * @return 삭제 성공 여부를 나타내는 {@code Mono<Boolean>}입니다.
      */
     @Override
-    public Mono<Boolean> deleteRefreshToken(Long userId) {
-        return redisTemplate.opsForValue().delete(buildKey(userId));
+    public Mono<Boolean> deleteRefreshToken(String refreshToken) {
+        return redisTemplate.opsForValue().delete(buildKey(refreshToken));
     }
 
 
     /**
      * 주어진 사용자 ID를 기반으로 Redis에 저장할 고유 키 문자열을 생성합니다.
      *
-     * <p>키 형식: {@code {prefix}:{userId}:{suffix}}</p>
+     * <p>키 형식: {@code {prefix}:{refreshToken}:{suffix}}</p>
      *
-     * @param userId 키 생성에 사용할 사용자 ID입니다.
+     * @param refreshToken 키 생성에 사용할 사용자 ID입니다.
      * @return 생성된 Redis 키 문자열입니다.
      */
-    private String buildKey(Long userId) {
-        return jwtProperties.redis().key().prefix() + ":" + userId + ":" + jwtProperties.redis().key().suffix();
+    private String buildKey(String refreshToken) {
+        return jwtProperties.redis().key().prefix() + ":" + refreshToken + ":" + jwtProperties.redis().key().suffix();
     }
 }
