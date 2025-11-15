@@ -22,7 +22,7 @@ public record RefreshTokenMetadata(
         return new RefreshTokenMetadata(userId, true, expiresAt);
     }
 
-    public boolean isValid() {
+    public boolean isValidAndNotExpired() {
         return this.isValid && this.expiresAt.isAfter(Instant.now());
     }
 }

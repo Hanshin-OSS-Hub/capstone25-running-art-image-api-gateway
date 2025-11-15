@@ -92,7 +92,7 @@ public class RefreshTokenService implements RefreshTokenUseCase {
                                 "리프레시 토큰을 찾을 수 없거나 만료되었습니다.")
                         )
                 )
-                .filter(RefreshTokenMetadata::isValid)
+                .filter(RefreshTokenMetadata::isValidAndNotExpired)
                 .switchIfEmpty(
                         // Redis에 있지만 유효하지 않은 토큰(탈취 감지: 이미 새 토큰 발급으로 무효화됨)이면 에러 발생
                         Mono.error(new BusinessException(
