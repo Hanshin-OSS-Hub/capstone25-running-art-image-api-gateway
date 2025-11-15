@@ -21,11 +21,6 @@ import org.springframework.data.redis.serializer.*;
 @Configuration
 public class RedisConfig {
 
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
-
     /**
      * RefreshTokenMetadata를 위한 Primary ReactiveRedisTemplate 빈 정의
      *
