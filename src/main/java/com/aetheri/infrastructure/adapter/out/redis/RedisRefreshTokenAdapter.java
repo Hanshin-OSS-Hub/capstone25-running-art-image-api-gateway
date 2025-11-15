@@ -1,12 +1,8 @@
 package com.aetheri.infrastructure.adapter.out.redis;
 
 import com.aetheri.application.port.out.token.RedisRefreshTokenRepositoryPort;
-import com.aetheri.domain.exception.BusinessException;
-import com.aetheri.domain.exception.message.ErrorMessage;
 import com.aetheri.domain.model.RefreshTokenMetadata;
 import com.aetheri.infrastructure.config.properties.JWTProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
@@ -26,7 +22,6 @@ import java.util.Collections;
 public class RedisRefreshTokenAdapter implements RedisRefreshTokenRepositoryPort {
     private final ReactiveRedisTemplate<String, RefreshTokenMetadata> reactiveRedisTemplate;
     private final RedisScript<RefreshTokenMetadata> updateTokenScript; // 주입받은 스크립트
-    private final ObjectMapper objectMapper;
     private final JWTProperties jwtProperties;
 
     /**
@@ -41,12 +36,10 @@ public class RedisRefreshTokenAdapter implements RedisRefreshTokenRepositoryPort
     public RedisRefreshTokenAdapter(
             ReactiveRedisTemplate<String, RefreshTokenMetadata> reactiveRedisTemplate,
             RedisScript<RefreshTokenMetadata> updateTokenScript,
-            ObjectMapper objectMapper,
             JWTProperties jwtProperties
     ) {
         this.reactiveRedisTemplate = reactiveRedisTemplate;
         this.updateTokenScript = updateTokenScript;
-        this.objectMapper = objectMapper;
         this.jwtProperties = jwtProperties;
     }
 
