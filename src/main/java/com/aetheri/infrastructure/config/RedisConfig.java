@@ -1,6 +1,7 @@
 package com.aetheri.infrastructure.config;
 
 import com.aetheri.domain.model.RefreshTokenMetadata;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -20,6 +21,11 @@ import org.springframework.data.redis.serializer.*;
 @Configuration
 public class RedisConfig {
 
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
     /**
      * RefreshTokenMetadata를 위한 Primary ReactiveRedisTemplate 빈 정의
      *
@@ -36,14 +42,18 @@ public class RedisConfig {
      */
     @Bean
     @Primary
-    public ReactiveRedisTemplate<String, RefreshTokenMetadata> refreshTokenMetadataReactiveRedisTemplate(ReactiveRedisConnectionFactory factory) {
+    public ReactiveRedisTemplate<String, RefreshTokenMetadata> refreshTokenMetadataReactiveRedisTemplate
+    (
+            ReactiveRedisConnectionFactory factory,
+            ObjectMapper objectMapper
+    ) {
         // Key 직렬화 (String)
         StringRedisSerializer keySerializer = new StringRedisSerializer();
 
         // Value 직렬화 (JSON - RefreshTokenMetadata 객체)
         // Jackson2JsonRedisSerializer를 사용하여 Java 객체(RefreshTokenMetadata)를 JSON으로 변환합니다.
         Jackson2JsonRedisSerializer<RefreshTokenMetadata> valueSerializer =
-                new Jackson2JsonRedisSerializer<>(RefreshTokenMetadata.class);
+                new Jackson2JsonRedisSerializer<>(objectMapper, RefreshTokenMetadata.class);
 
         // RedisSerializationContext 생성
         // Key는 String, Value는 JSON으로 직렬화하도록 Context를 설정합니다.
