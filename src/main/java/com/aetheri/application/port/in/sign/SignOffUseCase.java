@@ -20,5 +20,5 @@ public interface SignOffUseCase {
      * @param runnerId 회원 탈퇴 및 연동 해제 처리를 요청하는 사용자의 고유 식별자(ID)입니다.
      * @return 탈퇴 및 모든 후속 처리가 완료되었을 때 종료되는 {@code Mono<Void>} 객체입니다.
      */
-    Mono<Void> signOff(Long runnerId);
+    Mono<Void> signOff(Long runnerId, String refreshToken);
 }

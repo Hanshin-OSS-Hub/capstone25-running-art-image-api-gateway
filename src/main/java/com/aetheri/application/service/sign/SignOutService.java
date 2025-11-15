@@ -39,7 +39,7 @@ public class SignOutService implements SignOutUseCase {
      * @return 모든 로그아웃 처리가 완료되었을 때 종료되는 {@code Mono<Void>} 객체입니다.
      */
     @Override
-    public Mono<Void> signOut(Long runnerId) {
+    public Mono<Void> signOut(Long runnerId, String refreshToken) {
         // 데이터베이스에서 카카오 토큰을 조회합니다.
         return findKakaoToken(runnerId)
                 // 리프레시 토큰을 재발급 받아 최신 액세스 토큰을 확보합니다.
@@ -54,7 +54,7 @@ public class SignOutService implements SignOutUseCase {
                 // 데이터베이스의 카카오 토큰을 삭제합니다.
                 .then(deleteKakaoToken(runnerId))
                 // Redis의 시스템 리프레시 토큰을 삭제합니다.
-                .then(deleteRefreshToken(runnerId))
+                .then(deleteRefreshToken(refreshToken))
                 // 성공했다면 성공을 로깅합니다.
                 .doOnSuccess(v -> log.info("[SignOutService] 로그아웃 성공: {}", runnerId));
     }
@@ -106,12 +106,12 @@ public class SignOutService implements SignOutUseCase {
     }
 
     /**
-     * Redis 저장소에서 사용자 ID({@code runnerId})와 연결된 시스템 리프레시 토큰을 삭제합니다.
+     * Redis 저장소에서 사용자 ID({@code refreshToken})와 연결된 시스템 리프레시 토큰을 삭제합니다.
      *
-     * @param runnerId 리프레시 토큰을 삭제할 사용자의 고유 식별자(ID)입니다.
+     * @param refreshToken 리프레시 토큰을 삭제할 리프레쉬 토큰 본문입니다.
      * @return 삭제 처리가 완료되었을 때 종료되는 {@code Mono<Void>} 객체입니다.
      */
-    private Mono<Void> deleteRefreshToken(Long runnerId) {
-        return redisRefreshTokenRepositoryPort.deleteRefreshToken(runnerId).then();
+    private Mono<Void> deleteRefreshToken(String refreshToken) {
+        return redisRefreshTokenRepositoryPort.deleteRefreshToken(refreshToken).then();
     }
 }
