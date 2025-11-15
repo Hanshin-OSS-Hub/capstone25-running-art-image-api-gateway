@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Optional;
 
@@ -214,22 +215,35 @@ public class SignInService implements SignInUseCase {
      * @return 생성된 토큰 쌍을 담은 {@code TokenBundle}을 발행하는 {@code Mono}입니다.
      */
     private Mono<TokenBundle> issueTokensAndSave(Long runnerId) {
-        // 1. 사용자 ID로 Authentication 객체 생성 (JWT 생성에 필요)
-        Authentication auth = AuthenticationConverter.toAuthentication(runnerId);
+        // 1. 블로킹 작업을 'Callable'로 감싸서 Mono를 생성합니다.
+        Mono<TokenData> blockingMono = Mono.fromCallable(() -> {
+            // 1. 사용자 ID로 Authentication 객체 생성
+            Authentication auth = AuthenticationConverter.toAuthentication(runnerId);
+            // 2. 블로킹 I/O: 액세스 토큰 생성
+            String accessToken = jwtTokenProviderPort.generateAccessToken(auth);
+            // 3. 블로킹 I/O: 리프레시 토큰 생성
+            RefreshTokenIssueResult refreshTokenIssueResult = jwtTokenProviderPort.generateRefreshToken(auth);
+            // 4. Redis 저장을 위한 메타데이터 객체 생성
+            RefreshTokenMetadata refreshTokenMetadata = RefreshTokenMetadata.of(refreshTokenIssueResult.userId(), refreshTokenIssueResult.expire());
+            // 5. 다음 스트림(flatMap)에 전달할 데이터를 묶습니다.
+            return new TokenData(accessToken, refreshTokenIssueResult.refreshToken(), refreshTokenMetadata);
+        }).subscribeOn(Schedulers.boundedElastic()); // boundedElastic 스레드 풀에서 실행되도록 설정
 
-        // 2. 액세스 토큰과 리프레시 토큰을 생성합니다. (JWT 생성은 블로킹 작업이므로, 호출 스택에서 격리되어야 함)
-        String accessToken = jwtTokenProviderPort.generateAccessToken(auth);
-        RefreshTokenIssueResult refreshTokenIssueResult = jwtTokenProviderPort.generateRefreshToken(auth);
 
-        // 3. Redis 저장을 위한 메타데이터 객체 생성
-        RefreshTokenMetadata refreshTokenMetadata = RefreshTokenMetadata.of(refreshTokenIssueResult.userId(), refreshTokenIssueResult.expire());
-
-        return redisRefreshTokenRepositoryPort
-                // 4. 생성된 리프레시 토큰 문자열(토큰 값 자체)을 키로, 메타데이터를 값으로 Redis에 비동기 저장합니다.
-                .saveRefreshToken(refreshTokenIssueResult.refreshToken(), refreshTokenMetadata)
-                // 5. Redis 저장이 완료되면, 액세스/리프레시 토큰 번들 DTO를 발행하여 다음 단계로 전달합니다.
-                .thenReturn(new TokenBundle(accessToken, refreshTokenIssueResult.refreshToken()));
+        // 3. 블로킹 작업 완료 후(flatMap), 논블로킹(Redis 저장) 작업을 체이닝합니다.
+        return blockingMono.flatMap(data ->
+                redisRefreshTokenRepositoryPort
+                        // 3-1. (논블로킹) Redis에 비동기 저장
+                        .saveRefreshToken(data.refreshToken, data.metadata)
+                        // 3-2. 저장이 완료되면 최종 TokenBundle 반환
+                        .thenReturn(new TokenBundle(data.accessToken, data.refreshToken))
+        );
     }
+
+    /**
+     * 블로킹 작업의 결과를 다음 리액티브 체인으로 전달하기 위한 내부 헬퍼 레코드
+     */
+    private record TokenData(String accessToken, String refreshToken, RefreshTokenMetadata metadata) {}
 
     /**
      * 이 서비스 내에서만 사용할 JWT 토큰 번들 운반 DTO (Java Record)
