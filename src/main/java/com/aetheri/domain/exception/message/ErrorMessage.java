@@ -94,6 +94,7 @@ public enum ErrorMessage {
      * Redis에서 해당 키에 대한 리프레시 토큰을 찾지 못했을 때 발생합니다. (404 Not Found)
      */
     NOT_FOUND_REFRESH_TOKEN_IN_REDIS(HttpStatus.NOT_FOUND, "Redis에서 리프레쉬 토큰을 찾지 못했습니다."),
+    TOKEN_PARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "토큰 파싱에 실패했습니다"),
 
 
     // -----------------------------------------------------------------------------------------------------------------

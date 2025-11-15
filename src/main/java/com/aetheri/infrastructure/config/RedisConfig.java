@@ -1,42 +1,77 @@
 package com.aetheri.infrastructure.config;
 
+import com.aetheri.domain.model.RefreshTokenMetadata;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
+import org.springframework.data.redis.serializer.*;
 
 /**
- * Spring Data Redis를 사용하기 위한 **반응형(Reactive) 설정 클래스**입니다.
+ * Spring Data Redis의 반응형(Reactive) 설정 클래스
  *
- * <p>이 설정은 {@link ReactiveRedisConnectionFactory}를 사용하여 Redis와의 비동기/논블로킹
- * 통신을 가능하게 하며, {@code String} 키와 {@code String} 값을 사용하는
- * {@link ReactiveRedisTemplate} 빈을 정의합니다.</p>
+ * <p>이 클래스는 {@link ReactiveRedisConnectionFactory}를 활용하여 Redis와의
+ * 비동기/논블로킹(Async/Non-blocking) 통신을 위한 기반을 마련합니다.</p>
+ *
+ * <p>주요 목적은 String 키와 도메인 객체인 {@code RefreshTokenMetadata} 값을
+ * 처리하도록 특화된 {@link ReactiveRedisTemplate} 빈을 정의하는 것입니다.</p>
  */
 @Configuration
 public class RedisConfig {
 
     /**
-     * Redis 연결 팩토리를 사용하여 {@code String} 키와 {@code String} 값을 처리하는
-     * **주요(Primary) {@link ReactiveRedisTemplate} 빈**을 생성합니다.
+     * RefreshTokenMetadata를 위한 Primary ReactiveRedisTemplate 빈 정의
      *
-     * <p>이 템플릿은 키와 값 모두에 대해 {@link RedisSerializer#string()}를 사용하여
-     * 직렬화 컨텍스트를 구성하므로, 일반 문자열 데이터를 Redis에 저장하고 조회하는 데 적합합니다.</p>
+     * <p>Redis 연결 팩토리를 사용하여 {@code String} 키와 JSON 직렬화된
+     * {@code RefreshTokenMetadata} 값을 처리하는 주요(Primary) {@link ReactiveRedisTemplate} 빈을 생성합니다.</p>
+     *
+     * <ul>
+     * <li>Key Serializer: {@link StringRedisSerializer}를 사용하여 Key는 문자열로 저장됩니다.</li>
+     * <li>Value Serializer: {@link Jackson2JsonRedisSerializer}를 사용하여 Value는 JSON 형식으로 직렬화/역직렬화됩니다.</li>
+     * </ul>
      *
      * @param factory Redis 연결을 관리하는 반응형 연결 팩토리입니다.
-     * @return {@code String} 키/값을 위한 설정이 완료된 {@code ReactiveRedisTemplate} 인스턴스입니다.
+     * @return String 키와 RefreshTokenMetadata 값을 위한 설정이 완료된 {@code ReactiveRedisTemplate} 인스턴스입니다.
      */
     @Bean
     @Primary
-    public ReactiveRedisTemplate<String, String> stringReactiveRedisTemplate(ReactiveRedisConnectionFactory factory) {
-        // 키와 값 모두 String 직렬화 방식을 사용하도록 컨텍스트 설정
-        RedisSerializationContext<String, String> context =
-                RedisSerializationContext.<String, String>newSerializationContext(RedisSerializer.string())
-                        .value(RedisSerializer.string()) // 값 직렬화 설정
+    public ReactiveRedisTemplate<String, RefreshTokenMetadata> refreshTokenMetadataReactiveRedisTemplate
+    (
+            ReactiveRedisConnectionFactory factory,
+            ObjectMapper objectMapper
+    ) {
+        // Key 직렬화 (String)
+        StringRedisSerializer keySerializer = new StringRedisSerializer();
+
+        // Value 직렬화 (JSON - RefreshTokenMetadata 객체)
+        // Jackson2JsonRedisSerializer를 사용하여 Java 객체(RefreshTokenMetadata)를 JSON으로 변환합니다.
+        Jackson2JsonRedisSerializer<RefreshTokenMetadata> valueSerializer =
+                new Jackson2JsonRedisSerializer<>(objectMapper, RefreshTokenMetadata.class);
+
+        // RedisSerializationContext 생성
+        // Key는 String, Value는 JSON으로 직렬화하도록 Context를 설정합니다.
+        RedisSerializationContext<String, RefreshTokenMetadata> context =
+                RedisSerializationContext.<String, RefreshTokenMetadata>newSerializationContext()
+                        .key(keySerializer)             // 일반 Key 직렬화 방식
+                        .value(valueSerializer)         // 일반 Value 직렬화 방식
+                        .hashKey(keySerializer)         // Hash 타입의 Key 직렬화 방식
+                        .hashValue(valueSerializer)     // Hash 타입의 Value 직렬화 방식
                         .build();
 
+        // ReactiveRedisTemplate 인스턴스 생성 및 반환
         return new ReactiveRedisTemplate<>(factory, context);
+    }
+
+    @Bean
+    public RedisScript<RefreshTokenMetadata> getAndInvalidateScript() {
+        DefaultRedisScript<RefreshTokenMetadata> script = new DefaultRedisScript<>();
+        script.setLocation(new ClassPathResource("scripts/get_and_refresh_token_invalidation.lua"));
+        script.setResultType(RefreshTokenMetadata.class);
+        return script;
     }
 }

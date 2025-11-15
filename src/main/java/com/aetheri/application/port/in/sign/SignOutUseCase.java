@@ -20,5 +20,5 @@ public interface SignOutUseCase {
      * @param runnerId 로그아웃 처리를 요청하는 사용자의 고유 식별자(ID)입니다.
      * @return 로그아웃 및 토큰 무효화 처리가 완료되었을 때 종료되는 {@code Mono<Void>} 객체입니다.
      */
-    Mono<Void> signOut(Long runnerId);
+    Mono<Void> signOut(Long runnerId, String refreshToken);
 }

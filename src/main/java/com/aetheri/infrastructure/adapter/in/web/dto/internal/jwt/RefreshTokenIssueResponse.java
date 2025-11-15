@@ -16,22 +16,22 @@ import java.time.Instant;
  *
  * @param refreshToken 발급된 리프레시 토큰 문자열입니다. 이 토큰은 일반적으로 액세스 토큰이 만료되었을 때
  * 새로운 액세스 토큰을 얻는 데 사용됩니다.
- * @param jti JWT ID(JTI, JSON Web Token ID)입니다. 리프레시 토큰의 고유 식별자 역할을 합니다.
- * @param issuedAt 토큰이 발급된 시간(UTC 기준)을 나타내는 {@code Instant} 값입니다.
+ * @param userId 토큰을 발급한 사용자의 ID 입니다.
+ * @param expire 토큰이 만료되는 시간(UTC 기준)을 나타내는 {@code Instant} 값입니다.
  * @see RefreshTokenIssueResult
  */
 @Hidden
 @Builder(access = AccessLevel.PRIVATE)
 public record RefreshTokenIssueResponse(
         String refreshToken,
-        String jti,
-        Instant issuedAt
+        String userId,
+        Instant expire
 ) {
     public static RefreshTokenIssueResponse toResponse(RefreshTokenIssueResult response) {
         return RefreshTokenIssueResponse.builder()
                 .refreshToken(response.refreshToken())
-                .jti(response.jti())
-                .issuedAt(response.issuedAt())
+                .userId(response.userId())
+                .expire(response.expire())
                 .build();
     }
 }

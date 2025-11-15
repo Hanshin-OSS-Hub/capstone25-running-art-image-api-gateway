@@ -34,12 +34,13 @@ public class TokenRefreshHandler {
         String refreshToken = resolveToken(request.exchange().getRequest());
 
         if(refreshToken == null) {
+            log.info("리프레쉬 토큰이 존재하지 않습니다.");
             return ServerResponse
                     .badRequest()
                     .body(Mono.empty(), Void.class);
         }
 
-        return refreshTokenUseCase.reissueTokens(refreshToken)
+        return refreshTokenUseCase.refreshToken(refreshToken)
                 .flatMap(response ->
                         ServerResponse.ok()
                                 .cookie(cookieUseCase.buildCookie(response.refreshTokenIssueResult().refreshToken()))
