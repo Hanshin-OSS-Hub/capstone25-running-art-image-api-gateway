@@ -1,13 +1,19 @@
 package com.aetheri.infrastructure.adapter.out.redis;
 
 import com.aetheri.application.port.out.token.RedisRefreshTokenRepositoryPort;
+import com.aetheri.domain.exception.BusinessException;
+import com.aetheri.domain.exception.message.ErrorMessage;
 import com.aetheri.domain.model.RefreshTokenMetadata;
 import com.aetheri.infrastructure.config.properties.JWTProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.Collections;
 
 /**
  * {@code Redis}를 사용하여 리프레시 토큰(Refresh Token) 데이터를 관리하는
@@ -19,6 +25,8 @@ import java.time.Duration;
 @Service
 public class RedisRefreshTokenAdapter implements RedisRefreshTokenRepositoryPort {
     private final ReactiveRedisTemplate<String, RefreshTokenMetadata> reactiveRedisTemplate;
+    private final RedisScript<RefreshTokenMetadata> updateTokenScript; // 주입받은 스크립트
+    private final ObjectMapper objectMapper;
     private final JWTProperties jwtProperties;
 
     /**
@@ -32,9 +40,13 @@ public class RedisRefreshTokenAdapter implements RedisRefreshTokenRepositoryPort
      */
     public RedisRefreshTokenAdapter(
             ReactiveRedisTemplate<String, RefreshTokenMetadata> reactiveRedisTemplate,
+            RedisScript<RefreshTokenMetadata> updateTokenScript,
+            ObjectMapper objectMapper,
             JWTProperties jwtProperties
     ) {
         this.reactiveRedisTemplate = reactiveRedisTemplate;
+        this.updateTokenScript = updateTokenScript;
+        this.objectMapper = objectMapper;
         this.jwtProperties = jwtProperties;
     }
 
@@ -68,7 +80,11 @@ public class RedisRefreshTokenAdapter implements RedisRefreshTokenRepositoryPort
      */
     @Override
     public Mono<RefreshTokenMetadata> getRefreshToken(String refreshToken) {
-        return reactiveRedisTemplate.opsForValue().get(buildKey(refreshToken));
+        return reactiveRedisTemplate.execute(
+                        this.updateTokenScript,
+                        Collections.singletonList(buildKey(refreshToken))
+                )
+                .next();
     }
 
     /**
@@ -83,39 +99,6 @@ public class RedisRefreshTokenAdapter implements RedisRefreshTokenRepositoryPort
     public Mono<Boolean> deleteRefreshToken(String refreshToken) {
         return reactiveRedisTemplate.opsForValue().delete(buildKey(refreshToken));
     }
-
-    /**
-     * 기존 리프레시 토큰의 메타데이터를 업데이트합니다. (주로 탈취 감지 시 무효화 상태로 변경)
-     *
-     * <p>이 구현은 토큰이 무효화({@code metadata.invalidate()})될 때, 기존 Redis 키의 **남아있는 TTL을 유지**하며 값을 덮어씁니다.</p>
-     *
-     * @param refreshToken 업데이트할 리프레시 토큰 문자열입니다.
-     * @param metadata 업데이트할 새로운 메타데이터입니다. (서비스 레이어에서 이미 무효화된 상태로 전달될 것을 가정)
-     * @return 작업 완료를 나타내는 {@code Mono<Void>}입니다.
-     */
-    @Override
-    public Mono<Void> updateRefreshToken(String refreshToken, RefreshTokenMetadata metadata) {
-        // 1. 기존 TTL을 먼저 조회합니다.
-        Mono<Long> ttlMono = reactiveRedisTemplate.getExpire(refreshToken)
-                .map(Duration::getSeconds);
-
-        // 2. TTL을 사용하여 새 값(무효화된 메타데이터)을 저장합니다.
-        return ttlMono.flatMap(ttl -> {
-            if (ttl > 0) {
-                // TTL이 남아있다면 새 값으로 덮어쓰고 TTL을 유지합니다.
-                return reactiveRedisTemplate.opsForValue()
-                        .set(refreshToken, metadata.invalidate(), Duration.ofSeconds(ttl))
-                        .then();
-            } else {
-                // TTL이 없거나 곧 만료된다면, 단순 덮어쓰기를 합니다.
-                // (보안상 곧 사라질 토큰이므로 상관 없음)
-                return reactiveRedisTemplate.opsForValue()
-                        .set(refreshToken, metadata.invalidate())
-                        .then();
-            }
-        });
-    }
-
 
     /**
      * 리프레시 토큰 문자열을 기반으로 Redis에 저장할 고유 키 문자열을 생성합니다.

@@ -38,6 +38,4 @@ public interface RedisRefreshTokenRepositoryPort {
      * @return 삭제 작업의 성공 여부({@code true} 또는 {@code false})를 발행하는 {@code Mono<Boolean>} 객체입니다.
      */
     Mono<Boolean> deleteRefreshToken(String key);
-
-    Mono<Void> updateRefreshToken(String refreshToken, RefreshTokenMetadata metadata);
 }

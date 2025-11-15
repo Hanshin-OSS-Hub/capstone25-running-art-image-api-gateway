@@ -62,9 +62,7 @@ public class RefreshTokenService implements RefreshTokenUseCase {
                     Authentication authentication = AuthenticationConverter.toAuthentication(Long.parseLong(userId));
 
                     // 3. 기존 토큰 삭제 (무효화): 기존 토큰을 무효화(isValid=false) 상태로 업데이트합니다.
-                    return redisRefreshTokenRepositoryPort.updateRefreshToken(refreshToken, metadata)
-                            // 4. 삭제 완료 후, 새로운 토큰 생성 및 Redis에 저장 로직으로 전환
-                            .then(createNewTokensAndSaveToRedis(authentication, userId));
+                    return createNewTokensAndSaveToRedis(authentication, userId);
                 });
     }
 

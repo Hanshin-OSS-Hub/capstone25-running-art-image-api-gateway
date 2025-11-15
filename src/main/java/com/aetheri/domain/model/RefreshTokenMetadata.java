@@ -1,5 +1,7 @@
 package com.aetheri.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.Instant;
 
 /**
@@ -11,17 +13,13 @@ public record RefreshTokenMetadata(
         boolean isValid, // 탈취 감지 시 false로 설정
         Instant expiresAt
 ) {
-    // 탈취 감지를 위한 상태 변경 메서드 (불변성 유지)
-    // Record는 Setter를 가지지 않으므로, 상태 변경 시 새로운 Record 인스턴스를 반환합니다.
-    public RefreshTokenMetadata invalidate() {
-        return new RefreshTokenMetadata(this.userId, false, this.expiresAt);
-    }
 
     // 정적 팩토리 메서드
     public static RefreshTokenMetadata of(String userId, Instant expiresAt) {
         return new RefreshTokenMetadata(userId, true, expiresAt);
     }
 
+    @JsonIgnore
     public boolean isValidAndNotExpired() {
         return this.isValid && this.expiresAt.isAfter(Instant.now());
     }
