@@ -1,6 +1,5 @@
 package com.aetheri.infrastructure.config;
 
-import com.aetheri.application.port.in.token.RefreshTokenUseCase;
 import com.aetheri.application.port.out.jwt.JwtTokenResolverPort;
 import com.aetheri.application.port.out.jwt.JwtTokenValidatorPort;
 import com.aetheri.infrastructure.adapter.in.jwt.JwtAuthenticationFilter;
@@ -29,7 +28,6 @@ public class SecurityConfig {
     private final JwtTokenResolverPort jwtTokenResolverPort;
     private final JwtTokenValidatorPort jwtTokenValidatorPort;
     private final JWTProperties jwtProperties;
-    private final RefreshTokenUseCase refreshTokenUseCase;
 
     /**
      * 애플리케이션의 보안 필터 체인을 구성하는 {@link SecurityWebFilterChain} 빈을 정의합니다.
