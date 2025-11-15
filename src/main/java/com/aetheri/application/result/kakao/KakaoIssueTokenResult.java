@@ -1,7 +1,6 @@
 package com.aetheri.application.result.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.core.util.Json;
 
 /**
  * 카카오(Kakao) OAuth 2.0 API 서버로부터 토큰을 성공적으로 발급받았을 때의 응답 구조를 위한 레코드입니다.
