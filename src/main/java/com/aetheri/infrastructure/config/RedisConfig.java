@@ -70,7 +70,7 @@ public class RedisConfig {
     @Bean
     public RedisScript<RefreshTokenMetadata> getAndInvalidateScript() {
         DefaultRedisScript<RefreshTokenMetadata> script = new DefaultRedisScript<>();
-        script.setLocation(new ClassPathResource("scripts/update_token.lua"));
+        script.setLocation(new ClassPathResource("scripts/get_and_refresh_token_invalidation.lua"));
         script.setResultType(RefreshTokenMetadata.class);
         return script;
     }
