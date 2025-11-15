@@ -14,10 +14,11 @@ public interface SignOffUseCase {
      * <ol>
      * <li>데이터베이스에서 사용자 관련 모든 데이터 삭제.</li>
      * <li>카카오 API를 호출하여 해당 사용자의 서비스 연결을 해제(Unlink).</li>
-     * <li>사용자와 관련된 모든 토큰(예: 리프레시 토큰) 무효화.</li>
+     * <li>사용자와 관련된 모든 토큰(예: 리프레시 토큰) 무효화 또는 삭제 처리.</li>
      * </ol>
      *
      * @param runnerId 회원 탈퇴 및 연동 해제 처리를 요청하는 사용자의 고유 식별자(ID)입니다.
+     * @param refreshToken 현재 사용자의 리프레시 토큰입니다. 외부 서비스 연동 해제(Unlink) 또는 토큰 무효화에 사용될 수 있습니다.
      * @return 탈퇴 및 모든 후속 처리가 완료되었을 때 종료되는 {@code Mono<Void>} 객체입니다.
      */
     Mono<Void> signOff(Long runnerId, String refreshToken);
