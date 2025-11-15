@@ -66,6 +66,8 @@ public class SecurityConfig {
                         ).permitAll()
                         // 테스트용 경로 (예: 헬로 월드) 접근 허용
                         .pathMatchers("/api/hello/**").permitAll()
+                        // 리프레쉬 토큰을 사용한 액세스 토큰 재발급 API는 쿠키에 리프레쉬 토큰만 있어도 접근 가능하도록 허용
+                        .pathMatchers("/api/v1/token").permitAll()
                         // 이미지 스트리밍 전체 조회 (GET /api/v1/image)는 인증된 사용자만 접근 가능
                         .pathMatchers(HttpMethod.GET, "/api/v1/image").authenticated()
                         // 이미지 단건 조회 (GET /api/v1/image/{id})는 인증 없이 접근 허용
